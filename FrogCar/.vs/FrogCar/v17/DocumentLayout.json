@@ -3,66 +3,62 @@
   "WorkspaceRootPath": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\controllers\\carlistingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\carlistingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.CarListing.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\models\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\models\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.carRentals.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\models\\carrentalrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\models\\carrentalrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\controllers\\carrentalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\carrentalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\controllers\\carlistingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\carlistingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\controllers\\accountcontoller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\accountcontoller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\models\\carrental.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\models\\carrental.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\models\\carlisting.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\models\\carlisting.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\models\\mappoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\models\\mappoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\controllers\\mappointscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\mappointscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310112642_RepairRent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FrogCar\\Migrations\\20250310112642_RepairRent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103541_UpdateMapPointListingIdNullable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FrogCar\\Migrations\\20250307103541_UpdateMapPointListingIdNullable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\migrations\\20250310112104_rentcar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\migrations\\20250310112104_rentcar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103341_fixxxPoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FrogCar\\Migrations\\20250307103341_fixxxPoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\controllers\\authenticationmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\authenticationmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\migrations\\20250307102809_listingidtomappoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\migrations\\20250307102809_listingidtomappoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103208_FixxPoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FrogCar\\Migrations\\20250307103208_FixxPoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\qloro\\onedrive\\pulpit\\mateusz\\frogcar\\frogcar\\frogcar\\migrations\\appdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\migrations\\appdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103008_fixpoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FrogCar\\Migrations\\20250307103008_fixpoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307102928_FixMapPoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FrogCar\\Migrations\\20250307102928_FixMapPoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.MapPoints.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310105522_AddRentalPriceToCar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FrogCar\\Migrations\\20250310105522_AddRentalPriceToCar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.Users.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
@@ -75,200 +71,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 4,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Program.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Program.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Program.cs",
-              "RelativeToolTip": "FrogCar\\Program.cs",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAiwDoAAAAGAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T11:01:16.704Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Login.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\Login.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Models\\Login.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\Login.cs",
-              "RelativeToolTip": "FrogCar\\Models\\Login.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:47:34.219Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "AccountContoller.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\AccountContoller.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Controllers\\AccountContoller.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\AccountContoller.cs",
-              "RelativeToolTip": "FrogCar\\Controllers\\AccountContoller.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:44:51.472Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "CarListingsController.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\CarListingsController.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Controllers\\CarListingsController.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\CarListingsController.cs",
-              "RelativeToolTip": "FrogCar\\Controllers\\CarListingsController.cs",
-              "ViewState": "AQIAAAYAAAAAAAAAAAAuwDYAAAA+AAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T09:34:55.491Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AppDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Data\\AppDbContext.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Data\\AppDbContext.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Data\\AppDbContext.cs",
-              "RelativeToolTip": "FrogCar\\Data\\AppDbContext.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:26:49.889Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "dbo.CarListing [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.CarListing.sql",
-              "ToolTip": "dbo.CarListing [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-03-07T09:35:52.71Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CarListing.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarListing.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Models\\CarListing.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarListing.cs",
-              "RelativeToolTip": "FrogCar\\Models\\CarListing.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACIAAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:26:40.888Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "MapPoint.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\MapPoint.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Models\\MapPoint.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\MapPoint.cs",
-              "RelativeToolTip": "FrogCar\\Models\\MapPoint.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:26:43.529Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "MapPointsController.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\MapPointsController.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Controllers\\MapPointsController.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\MapPointsController.cs",
-              "RelativeToolTip": "FrogCar\\Controllers\\MapPointsController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACgAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:38:17.841Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "20250307103541_UpdateMapPointListingIdNullable.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103541_UpdateMapPointListingIdNullable.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250307103541_UpdateMapPointListingIdNullable.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103541_UpdateMapPointListingIdNullable.cs",
-              "RelativeToolTip": "FrogCar\\Migrations\\20250307103541_UpdateMapPointListingIdNullable.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:35:41.687Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "20250307103341_fixxxPoints.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103341_fixxxPoints.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250307103341_fixxxPoints.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103341_fixxxPoints.cs",
-              "RelativeToolTip": "FrogCar\\Migrations\\20250307103341_fixxxPoints.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:33:41.23Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "20250307103208_FixxPoints.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103208_FixxPoints.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250307103208_FixxPoints.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103208_FixxPoints.cs",
-              "RelativeToolTip": "FrogCar\\Migrations\\20250307103208_FixxPoints.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:32:08.805Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "20250307103008_fixpoints.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103008_fixpoints.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250307103008_fixpoints.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307103008_fixpoints.cs",
-              "RelativeToolTip": "FrogCar\\Migrations\\20250307103008_fixpoints.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:30:08.378Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "20250307102809_ListingIdToMapPoints.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307102809_ListingIdToMapPoints.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250307102809_ListingIdToMapPoints.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307102809_ListingIdToMapPoints.cs",
-              "RelativeToolTip": "FrogCar\\Migrations\\20250307102809_ListingIdToMapPoints.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAACEAAAAJAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:28:09.124Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "20250307102928_FixMapPoints.cs",
-              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307102928_FixMapPoints.cs",
-              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250307102928_FixMapPoints.cs",
-              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250307102928_FixMapPoints.cs",
-              "RelativeToolTip": "FrogCar\\Migrations\\20250307102928_FixMapPoints.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-07T10:29:28.708Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
@@ -279,17 +83,196 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "dbo.MapPoints [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.MapPoints.sql",
-              "ToolTip": "dbo.MapPoints [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-03-07T10:23:53.693Z",
+              "DocumentIndex": 3,
+              "Title": "CarRentalController.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\CarRentalController.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\CarRentalController.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\CarRentalController.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\CarRentalController.cs",
+              "ViewState": "AQIAAF4AAAAAAAAAAAAwwIUAAABSAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:23:44.456Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 1,
+              "Title": "dbo.carRentals [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.carRentals.sql",
+              "ToolTip": "dbo.carRentals [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-03-10T11:22:47.601Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "dbo.CarListing [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.CarListing.sql",
+              "ToolTip": "dbo.CarListing [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-03-10T10:57:55.992Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CarRentalRequest.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarRentalRequest.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Models\\CarRentalRequest.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarRentalRequest.cs",
+              "RelativeToolTip": "FrogCar\\Models\\CarRentalRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAzAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:35:49.759Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CarListingsController.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\CarListingsController.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\CarListingsController.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\CarListingsController.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\CarListingsController.cs",
+              "ViewState": "AQIAAFYAAAAAAAAAAAAkwHwAAAAdAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T10:38:47.546Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AccountContoller.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\AccountContoller.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\AccountContoller.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\AccountContoller.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\AccountContoller.cs",
+              "ViewState": "AQIAADwAAAAAAAAAAAAowDcAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T10:51:04.963Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CarRental.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarRental.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Models\\CarRental.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarRental.cs",
+              "RelativeToolTip": "FrogCar\\Models\\CarRental.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:19:14.356Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "CarListing.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarListing.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Models\\CarListing.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Models\\CarListing.cs",
+              "RelativeToolTip": "FrogCar\\Models\\CarListing.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T10:54:11.014Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Data\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "FrogCar\\Data\\AppDbContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:20:32.962Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "20250310112642_RepairRent.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310112642_RepairRent.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250310112642_RepairRent.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310112642_RepairRent.cs",
+              "RelativeToolTip": "FrogCar\\Migrations\\20250310112642_RepairRent.cs",
+              "ViewState": "AQIAACUAAAAAAAAAAADwvzQAAAAzAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:26:42.891Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "20250310112104_RentCar.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310112104_RentCar.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250310112104_RentCar.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310112104_RentCar.cs",
+              "RelativeToolTip": "FrogCar\\Migrations\\20250310112104_RentCar.cs",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAACwAAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:21:04.936Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AuthenticationMiddleware.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB0AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:11:38.481Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Program.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Program.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Program.cs",
+              "RelativeToolTip": "FrogCar\\Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAFYAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T11:05:26.379Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "AppDbContextModelSnapshot.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\AppDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Migrations\\AppDbContextModelSnapshot.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\AppDbContextModelSnapshot.cs",
+              "RelativeToolTip": "FrogCar\\Migrations\\AppDbContextModelSnapshot.cs",
+              "ViewState": "AQIAACMAAAAAAAAAAAAgwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T10:55:42.501Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "20250310105522_AddRentalPriceToCar.cs",
+              "DocumentMoniker": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310105522_AddRentalPriceToCar.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Migrations\\20250310105522_AddRentalPriceToCar.cs",
+              "ToolTip": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCar\\FrogCar\\FrogCar\\Migrations\\20250310105522_AddRentalPriceToCar.cs",
+              "RelativeToolTip": "FrogCar\\Migrations\\20250310105522_AddRentalPriceToCar.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-10T10:55:22.497Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "dbo.Users [Data]",
               "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.Users.sql",
               "ToolTip": "dbo.Users [Data]",

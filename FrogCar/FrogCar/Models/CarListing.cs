@@ -12,25 +12,29 @@ namespace FrogCar.Models
         public string Brand { get; set; } = string.Empty;
 
         [Required]
-        public double EngineCapacity { get; set; } // Pojemność silnika w litrach
+        public double EngineCapacity { get; set; } 
 
         [Required]
-        public string FuelType { get; set; } = string.Empty; // Rodzaj paliwa (np. Benzyna, Diesel, Elektryczny)
+        public string FuelType { get; set; } = string.Empty; 
 
         [Required]
-        public int Seats { get; set; } // Liczba miejsc
+        public int Seats { get; set; } 
 
         [Required]
-        public string CarType { get; set; } = string.Empty; // Typ auta (SUV, Sedan, Hatchback)
+        public string CarType { get; set; } = string.Empty; 
 
-        public List<string> Features { get; set; } = new(); // Lista dodatków
+        public List<string> Features { get; set; } = new(); 
 
-        public double Latitude { get; set; } // Szerokość geograficzna
-        public double Longitude { get; set; } // Długość geograficzna
+        public double Latitude { get; set; } 
+        public double Longitude { get; set; } 
 
         public int UserId { get; set; }
 
         [JsonIgnore]
-        public User? User { get; set; } // Relacja z użytkownikiem
+        public User? User { get; set; }
+        public bool IsAvailable { get; set; } = true;
+        
+        [Required]
+        public decimal RentalPricePerDay { get; set; }
     }
 }

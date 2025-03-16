@@ -57,14 +57,13 @@ namespace FrogCar.Controllers
                 return BadRequest(new { message = "Podany adres e-mail jest już używany." });
             }
 
-            // Domyślnie nowy użytkownik ma rolę "User"
             string role = "User";
 
             var newUser = new User
             {
                 Username = model.Username,
                 Email = model.Email,
-                Password = HashPassword(model.Password), // Haszowanie hasła
+                Password = HashPassword(model.Password), 
                 Role = role
             };
 
@@ -77,7 +76,7 @@ namespace FrogCar.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            Console.WriteLine(JsonSerializer.Serialize(model)); // Logowanie danych wejściowych
+            Console.WriteLine(JsonSerializer.Serialize(model)); 
 
             if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
             {
@@ -104,7 +103,7 @@ namespace FrogCar.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, user.Role) // Przechowywanie roli w tokenie
+                new Claim(ClaimTypes.Role, user.Role) 
             };
 
             var token = new JwtSecurityToken(
@@ -118,13 +117,11 @@ namespace FrogCar.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // Haszowanie hasła za pomocą bcrypt
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
-        // Weryfikacja hasła za pomocą bcrypt
         private bool VerifyPassword(string inputPassword, string storedHash)
         {
             return BCrypt.Net.BCrypt.Verify(inputPassword, storedHash);
@@ -154,7 +151,7 @@ namespace FrogCar.Controllers
                 return "Hasło musi zawierać co najmniej jeden znak specjalny.";
             }
 
-            return null; // Brak błędów
+            return null; 
         }
 
         [HttpGet("users")]

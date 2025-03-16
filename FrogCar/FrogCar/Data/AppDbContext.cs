@@ -8,18 +8,20 @@ namespace FrogCar.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<MapPoint> MapPoints { get; set; }
         public DbSet<CarListing> CarListing { get; set; }
+
+        public DbSet<CarRental> CarRentals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<MapPoint>()
-                .HasOne(mp => mp.User)
+            // Ustawienie kaskadowego usuwania ogłoszeń użytkownika
+            modelBuilder.Entity<CarListing>()
+                .HasOne(cl => cl.User)
                 .WithMany()
-                .HasForeignKey(mp => mp.UserId)
-                .OnDelete(DeleteBehavior.Cascade);  
+                .HasForeignKey(cl => cl.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

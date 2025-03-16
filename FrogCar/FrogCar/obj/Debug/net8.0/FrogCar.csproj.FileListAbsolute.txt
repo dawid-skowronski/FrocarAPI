@@ -442,3 +442,4 @@ C:\Users\tytaj\Desktop\FroCar(Bcrypt)\FrogCar\FrogCar\obj\Debug\net8.0\FrogCar.g
 C:\Users\tytaj\Desktop\FroCar(Bcrypt)\FrogCar\FrogCar\obj\Debug\net8.0\ref\FrogCar.dll
 C:\Users\qloro\OneDrive\Pulpit\Mateusz\FrogCar\FrogCar\FrogCar\bin\Debug\net8.0\BCrypt.Net-Next.dll
 C:\Users\qloro\OneDrive\Pulpit\Mateusz\FrogCar\FrogCar\FrogCar\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\qloro\OneDrive\Pulpit\Mateusz\FrogCar\FrogCar\FrogCar\bin\Debug\net8.0\Newtonsoft.Json.dll
