@@ -1,0 +1,153 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\tytaj\\Desktop\\FrogCar\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\tytaj\\desktop\\frogcar\\frogcar\\controllers\\carlistingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\carlistingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.CarListing.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\tytaj\\desktop\\frogcar\\frogcar\\models\\carlisting.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\models\\carlisting.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\tytaj\\desktop\\frogcar\\frogcar\\controllers\\accountcontoller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\accountcontoller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\tytaj\\desktop\\frogcar\\frogcar\\controllers\\authenticationmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\authenticationmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\tytaj\\desktop\\frogcar\\frogcar\\controllers\\carrentalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\controllers\\carrentalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\tytaj\\desktop\\frogcar\\frogcar\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|c:\\users\\tytaj\\desktop\\frogcar\\frogcar\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{6B694B5F-7A07-45AC-8092-36B9E7909605}|FrogCar\\FrogCar.csproj|solutionrelative:frogcar\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 9,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "dbo.CarListing.sql",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.CarListing.sql",
+              "ToolTip": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/FrogCarDb/True/SqlTable/dbo.CarListing.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-03-18T10:11:47.359Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AccountContoller.cs",
+              "DocumentMoniker": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\AccountContoller.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\AccountContoller.cs",
+              "ToolTip": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\AccountContoller.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\AccountContoller.cs",
+              "ViewState": "AgIAAGgAAAAAAAAAAAAIwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-18T10:06:55.287Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AuthenticationMiddleware.cs",
+              "DocumentMoniker": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "ToolTip": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\AuthenticationMiddleware.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-18T10:06:54.79Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CarRentalController.cs",
+              "DocumentMoniker": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\CarRentalController.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\CarRentalController.cs",
+              "ToolTip": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\CarRentalController.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\CarRentalController.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAowD0AAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-16T00:12:21.602Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CarListing.cs",
+              "DocumentMoniker": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Models\\CarListing.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Models\\CarListing.cs",
+              "ToolTip": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Models\\CarListing.cs",
+              "RelativeToolTip": "FrogCar\\Models\\CarListing.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-16T00:07:01.151Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "FrogCar\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Properties\\launchSettings.json",
+              "RelativeToolTip": "FrogCar\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-03-15T23:39:29.408Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Program.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Program.cs",
+              "ToolTip": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Program.cs",
+              "RelativeToolTip": "FrogCar\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-15T23:36:03.692Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CarListingsController.cs",
+              "DocumentMoniker": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\CarListingsController.cs",
+              "RelativeDocumentMoniker": "FrogCar\\Controllers\\CarListingsController.cs",
+              "ToolTip": "C:\\Users\\tytaj\\Desktop\\FrogCar\\FrogCar\\Controllers\\CarListingsController.cs",
+              "RelativeToolTip": "FrogCar\\Controllers\\CarListingsController.cs",
+              "ViewState": "AgIAAJkAAAAAAAAAAAAowNAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-15T23:27:19.723Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
