@@ -42,7 +42,13 @@ public class CarRentalController : ControllerBase
         if (user == null)
             return NotFound("Użytkownik nie istnieje.");
 
+        // Obliczanie liczby dni wynajmu
         var rentalDays = (carRentalRequest.RentalEndDate - carRentalRequest.RentalStartDate).Days;
+
+        // Ustawienie co najmniej 1 dnia wynajmu, jeśli różnica dni wynosi 0
+        if (rentalDays < 1)
+            rentalDays = 1;
+
         var rentalPrice = rentalDays * carListing.RentalPricePerDay;
 
         var carRental = new CarRental
@@ -50,7 +56,6 @@ public class CarRentalController : ControllerBase
             CarListingId = carListing.Id,
             CarListing = carListing,
             UserId = user.Id,
-            User = user,
             RentalStartDate = carRentalRequest.RentalStartDate,
             RentalEndDate = carRentalRequest.RentalEndDate,
             RentalPrice = rentalPrice,
@@ -66,26 +71,31 @@ public class CarRentalController : ControllerBase
 
 
 
+
     [HttpGet("user")]
     public async Task<IActionResult> GetUserCarRentals()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
         var rentals = await _context.CarRentals
-            .Where(r => r.UserId == userId)
+            .Where(r => r.UserId == userId && r.RentalStatus != "Ended")
             .Include(r => r.CarListing)
+            .Include(r => r.User)
             .ToListAsync();
 
         if (rentals == null || rentals.Count == 0)
-            return NotFound("Brak wypożyczeń dla tego użytkownika.");
+            return NotFound("Brak aktywnych wypożyczeń dla tego użytkownika.");
 
         return Ok(rentals);
     }
+
 
     [HttpGet("list")]
     public async Task<IActionResult> GetAllCarRentals()
     {
         var rentals = await _context.CarRentals
             .Include(r => r.CarListing)
+             .Include(r => r.User)
             .ToListAsync();
 
         if (rentals == null || rentals.Count == 0)
@@ -111,19 +121,21 @@ public class CarRentalController : ControllerBase
     public async Task<IActionResult> UpdateCarRentalStatus(int id, [FromBody] string status)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         var rental = await _context.CarRentals.FindAsync(id);
 
         if (rental == null)
             return NotFound("Wypożyczenie nie istnieje.");
 
-        if (rental.UserId != userId)
-            return BadRequest("To nie jest Twoje wypożyczenie. Tylko właściciel może zmieniać status.");
+        if (rental.UserId != userId && userRole != "Admin")
+            return BadRequest("To nie jest Twoje wypożyczenie. Tylko właściciel lub administrator może zmieniać status.");
 
         rental.RentalStatus = status;
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Status wypożyczenia został zmieniony.", rental });
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCarRental(int id)
@@ -138,7 +150,6 @@ public class CarRentalController : ControllerBase
         if (rental == null)
             return NotFound("Wypożyczenie nie istnieje.");
 
-        // Sprawdzenie: tylko właściciel lub admin
         if (rental.UserId != userId && userRole != "Admin")
             return Unauthorized(new { message = "Nie masz uprawnień do usunięcia tego wypożyczenia." });
 

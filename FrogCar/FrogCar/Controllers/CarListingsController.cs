@@ -88,31 +88,38 @@ public class CarListingsController : ControllerBase
     public async Task<IActionResult> UpdateCarAvailability(int id, [FromBody] bool isAvailable)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         var listing = await _context.CarListing.FindAsync(id);
 
         if (listing == null)
             return NotFound("Ogłoszenie nie istnieje.");
 
-        if (listing.UserId != userId)
-            return BadRequest("To nie jest Twoje ogłoszenie. Tylko właściciel może zmieniać dostępność.");
+        if (listing.UserId != userId && userRole != "Admin")
+            return BadRequest("To nie jest Twoje ogłoszenie. Tylko właściciel lub administrator może zmieniać dostępność.");
 
         listing.IsAvailable = isAvailable;
         await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Status dostępności zmieniony.", listing });
+        return Ok(new { message = "Status dostępności został zmieniony.", listing });
     }
+
 
     [HttpGet("user")]
     public async Task<IActionResult> GetUserCarListings()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        var listings = await _context.CarListing.Where(l => l.UserId == userId).ToListAsync();
+
+        // Pobranie ogłoszeń danego użytkownika, które są zatwierdzone
+        var listings = await _context.CarListing
+            .Where(l => l.UserId == userId && l.IsApproved == true)
+            .ToListAsync();
 
         if (listings == null || listings.Count == 0)
-            return NotFound("Brak ogłoszeń dla tego użytkownika.");
+            return NotFound("Brak zatwierdzonych ogłoszeń dla tego użytkownika.");
 
         return Ok(listings);
     }
+
 
     [HttpGet("list")]
     public async Task<IActionResult> GetAllCarListings(double? lat, double? lng, double radius = 50)
@@ -120,7 +127,8 @@ public class CarListingsController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
         var listings = await _context.CarListing
-            .Where(l => l.IsApproved == true && l.UserId != userId)
+            .Where(l => l.IsApproved == true && l.UserId != userId &&
+                        !_context.CarRentals.Any(r => r.CarListingId == l.Id && r.RentalStatus == "Active"))
             .ToListAsync();
 
         if (listings == null || listings.Count == 0)
@@ -138,6 +146,7 @@ public class CarListingsController : ControllerBase
 
         return Ok(listings);
     }
+
 
 
     [HttpGet("{id}")]
@@ -175,14 +184,13 @@ public class CarListingsController : ControllerBase
     public async Task<IActionResult> UpdateCarListing(int id, [FromBody] CarListing updatedListing)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         var listing = await _context.CarListing.FindAsync(id);
 
         if (listing == null)
             return NotFound("Ogłoszenie nie istnieje.");
-
-        if (listing.UserId != userId)
+        if (listing.UserId != userId && userRole != "Admin")
             return BadRequest("To nie jest Twoje ogłoszenie. Tylko właściciel może je edytować.");
-
         if (string.IsNullOrEmpty(updatedListing.Brand))
             return BadRequest("Marka samochodu jest wymagana.");
         if (updatedListing.EngineCapacity <= 0)

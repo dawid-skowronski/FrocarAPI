@@ -7,7 +7,7 @@
     public CarListing CarListing { get; set; } // Powiązanie z ogłoszeniem
 
     public int UserId { get; set; } // Id użytkownika, który wypożyczył samochód
-    public User User { get; set; } // Powiązanie z użytkownikiem
+    public User User { get; set; } 
 
     public DateTime RentalStartDate { get; set; } // Data rozpoczęcia wypożyczenia
     public DateTime RentalEndDate { get; set; } // Data zakończenia wypożyczenia

@@ -5,6 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
+using Hangfire;
+using Hangfire.SqlServer;
+using FrogCar.Controllers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +20,12 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:5174")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
-// Konfiguracja JWT
+
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -39,7 +44,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Dodanie Swaggera z obs³ug¹ JWT
+
+builder.Services.AddHangfire(config =>
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+
+
+builder.Services.AddScoped<IRentalService, RentalService>();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "FrogCar API", Version = "v1" });
@@ -84,11 +96,27 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseHangfireDashboard();
+
 app.UseMiddleware<AuthenticationMiddleware>();
 app.UseHttpsRedirection();
+
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.None
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+RecurringJob.AddOrUpdate<IRentalService>(
+    "update-ended-rentals",
+    service => service.UpdateEndedRentalsAsync(),
+    Cron.Hourly 
+);
+
 app.Run();

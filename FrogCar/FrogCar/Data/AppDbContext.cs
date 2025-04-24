@@ -16,7 +16,7 @@ namespace FrogCar.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Ustawienie kaskadowego usuwania ogłoszeń użytkownika
+            
             modelBuilder.Entity<CarListing>()
                 .HasOne(cl => cl.User)
                 .WithMany()
