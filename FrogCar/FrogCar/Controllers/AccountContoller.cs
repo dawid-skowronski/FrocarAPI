@@ -94,7 +94,17 @@ namespace FrogCar.Controllers
             }
 
             var token = GenerateJwtToken(user);
+
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, 
+                SameSite = SameSiteMode.Strict, 
+                Expires = DateTime.UtcNow.AddHours(1)
+            });
+
             return Ok(new { message = "Logowanie udane", token });
+
         }
 
         private string GenerateJwtToken(User user)
@@ -204,7 +214,6 @@ namespace FrogCar.Controllers
 
             return Ok("Twoje konto zostało usunięte.");
         }
-
 
     }
 }

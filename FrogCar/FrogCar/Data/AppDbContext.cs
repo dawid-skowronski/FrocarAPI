@@ -11,17 +11,36 @@ namespace FrogCar.Data
         public DbSet<CarListing> CarListing { get; set; }
 
         public DbSet<CarRental> CarRentals { get; set; }
+        public DbSet<CarRentalReview> CarRentalReviews { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Ustawienie kaskadowego usuwania ogłoszeń użytkownika
+            
             modelBuilder.Entity<CarListing>()
                 .HasOne(cl => cl.User)
                 .WithMany()
                 .HasForeignKey(cl => cl.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CarRentalReview>()
+        .HasOne(r => r.User)
+        .WithMany()
+        .HasForeignKey(r => r.UserId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarRentalReview>()
+    .HasOne(r => r.CarRental)
+    .WithMany()
+    .HasForeignKey(r => r.CarRentalId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CarRentalReview>()
+    .HasKey(r => r.ReviewId); 
+
         }
+
     }
 }

@@ -40,5 +40,7 @@ namespace FrogCar.Models
         [Required]
         public decimal RentalPricePerDay { get; set; }
 
+        public double? AverageRating { get; set; } = 0.0;
+
     }
 }

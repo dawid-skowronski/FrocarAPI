@@ -22,6 +22,38 @@ namespace FrogCar.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CarRentalReview", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
+
+                    b.Property<int>("CarRentalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId");
+
+                    b.HasIndex("CarRentalId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CarRentalReviews");
+                });
+
             modelBuilder.Entity("FrogCar.Models.CarListing", b =>
                 {
                     b.Property<int>("Id")
@@ -29,6 +61,9 @@ namespace FrogCar.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double?>("AverageRating")
+                        .HasColumnType("float");
 
                     b.Property<string>("Brand")
                         .IsRequired()
@@ -140,6 +175,25 @@ namespace FrogCar.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CarRentalReview", b =>
+                {
+                    b.HasOne("FrogCar.Models.CarRental", "CarRental")
+                        .WithMany()
+                        .HasForeignKey("CarRentalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FrogCar.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CarRental");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FrogCar.Models.CarListing", b =>
