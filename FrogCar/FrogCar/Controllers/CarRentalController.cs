@@ -42,8 +42,13 @@ public class CarRentalController : ControllerBase
         if (user == null)
             return NotFound("Użytkownik nie istnieje.");
 
+        // Obliczanie liczby dni wynajmu
         var rentalDays = (carRentalRequest.RentalEndDate - carRentalRequest.RentalStartDate).Days;
 
+<<<<<<< HEAD
+=======
+        // Ustawienie co najmniej 1 dnia wynajmu, jeśli różnica dni wynosi 0
+>>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
         if (rentalDays < 1)
             rentalDays = 1;
 
@@ -134,6 +139,7 @@ public class CarRentalController : ControllerBase
         return Ok(new { message = "Status wypożyczenia został zmieniony.", rental });
     }
 
+<<<<<<< HEAD
     [HttpGet("user/history")]
     public async Task<IActionResult> GetUserCarRentalHistory()
     {
@@ -226,6 +232,8 @@ public class CarRentalController : ControllerBase
 
 
 
+=======
+>>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCarRental(int id)

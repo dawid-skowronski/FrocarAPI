@@ -109,6 +109,10 @@ public class CarListingsController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
+<<<<<<< HEAD
+=======
+        // Pobranie ogłoszeń danego użytkownika, które są zatwierdzone
+>>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
         var listings = await _context.CarListing
             .Where(l => l.UserId == userId && l.IsApproved == true)
             .ToListAsync();

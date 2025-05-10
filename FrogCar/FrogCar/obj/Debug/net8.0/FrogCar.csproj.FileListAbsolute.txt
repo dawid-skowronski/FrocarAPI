@@ -462,6 +462,7 @@ C:\Users\qloro\OneDrive\Pulpit\Mateusz\FrogCar\FrogCar\FrogCar\bin\Debug\net8.0\
 C:\Users\qloro\OneDrive\Pulpit\Mateusz\FrogCar\FrogCar\FrogCar\bin\Debug\net8.0\tr-TR\Hangfire.Core.resources.dll
 C:\Users\qloro\OneDrive\Pulpit\Mateusz\FrogCar\FrogCar\FrogCar\bin\Debug\net8.0\zh-TW\Hangfire.Core.resources.dll
 C:\Users\qloro\OneDrive\Pulpit\Mateusz\FrogCar\FrogCar\FrogCar\bin\Debug\net8.0\zh\Hangfire.Core.resources.dll
+<<<<<<< HEAD
 C:\Users\mateu\Desktop\FrogCar\FrogCar\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\mateu\Desktop\FrogCar\FrogCar\bin\Debug\net8.0\appsettings.json
 C:\Users\mateu\Desktop\FrogCar\FrogCar\bin\Debug\net8.0\FrogCar.staticwebassets.endpoints.json
@@ -630,3 +631,5 @@ C:\Users\mateu\Desktop\FrogCar\FrogCar\obj\Debug\net8.0\refint\FrogCar.dll
 C:\Users\mateu\Desktop\FrogCar\FrogCar\obj\Debug\net8.0\FrogCar.pdb
 C:\Users\mateu\Desktop\FrogCar\FrogCar\obj\Debug\net8.0\FrogCar.genruntimeconfig.cache
 C:\Users\mateu\Desktop\FrogCar\FrogCar\obj\Debug\net8.0\ref\FrogCar.dll
+=======
+>>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
