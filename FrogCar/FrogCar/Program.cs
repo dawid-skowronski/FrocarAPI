@@ -86,6 +86,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 var app = builder.Build();
 
 app.UseCors(MyAllowSpecificOrigins);
@@ -116,11 +118,7 @@ app.MapControllers();
 RecurringJob.AddOrUpdate<IRentalService>(
     "update-ended-rentals",
     service => service.UpdateEndedRentalsAsync(),
-<<<<<<< HEAD
     Cron.Minutely 
-=======
-    Cron.Hourly 
->>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
 );
 
 app.Run();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+
 public class FilterController : ControllerBase
 {
     private readonly AppDbContext _context;

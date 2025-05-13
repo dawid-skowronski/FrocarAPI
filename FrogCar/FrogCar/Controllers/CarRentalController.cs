@@ -6,6 +6,7 @@ using FrogCar.Data;
 using FrogCar.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using FrogCar.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -13,10 +14,12 @@ using System.Threading.Tasks;
 public class CarRentalController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public CarRentalController(AppDbContext context)
+    public CarRentalController(AppDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     [HttpPost("create")]
@@ -35,20 +38,20 @@ public class CarRentalController : ControllerBase
         if (!carListing.IsAvailable)
             return BadRequest("Samochód jest już niedostępny.");
 
+        if (!carListing.IsApproved)
+            return BadRequest("Samochód jest nie dostępny.");
+
         carListing.IsAvailable = false;
 
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         var user = await _context.Users.FindAsync(userId);
         if (user == null)
             return NotFound("Użytkownik nie istnieje.");
+        if (carListing.UserId == userId)
+            return BadRequest("Nie możesz wypożyczyć własnego samochodu.");
 
-        // Obliczanie liczby dni wynajmu
         var rentalDays = (carRentalRequest.RentalEndDate - carRentalRequest.RentalStartDate).Days;
 
-<<<<<<< HEAD
-=======
-        // Ustawienie co najmniej 1 dnia wynajmu, jeśli różnica dni wynosi 0
->>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
         if (rentalDays < 1)
             rentalDays = 1;
 
@@ -139,7 +142,6 @@ public class CarRentalController : ControllerBase
         return Ok(new { message = "Status wypożyczenia został zmieniony.", rental });
     }
 
-<<<<<<< HEAD
     [HttpGet("user/history")]
     public async Task<IActionResult> GetUserCarRentalHistory()
     {
@@ -175,10 +177,11 @@ public class CarRentalController : ControllerBase
             return BadRequest("Recenzja może być wystawiona tylko dla zakończonych wypożyczeń.");
 
         var existingReview = await _context.CarRentalReviews
-            .FirstOrDefaultAsync(r => r.UserId == userId && r.CarRental.CarListingId == rental.CarListingId);
+    .FirstOrDefaultAsync(r => r.CarRentalId == reviewRequest.CarRentalId && r.UserId == userId);
 
         if (existingReview != null)
-            return BadRequest("Wystawiłeś już recenzję dla tego pojazdu.");
+            return BadRequest("Wystawiłeś już recenzję dla tego wypożyczenia.");
+
 
         var review = new CarRentalReview
         {
@@ -200,7 +203,7 @@ public class CarRentalController : ControllerBase
         var listing = await _context.CarListing.FindAsync(carListingId);
         if (listing != null)
         {
-            listing.AverageRating = Math.Round(averageRating, 2); 
+            listing.AverageRating = Math.Round(averageRating, 2);
             await _context.SaveChangesAsync();
         }
 
@@ -232,8 +235,6 @@ public class CarRentalController : ControllerBase
 
 
 
-=======
->>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCarRental(int id)
@@ -259,6 +260,26 @@ public class CarRentalController : ControllerBase
 
         return Ok("Wypożyczenie zostało usunięte i samochód jest teraz dostępny.");
     }
+
+    private async Task SendRentalEndedNotification(CarRental rental)
+    {
+        var user = await _context.Users.FindAsync(rental.UserId);
+        if (user == null) return;
+
+        var notificationMessage = $"Twoje wypożyczenie samochodu o ID {rental.CarRentalId} zostało zakończone.";
+
+        var notification = new Notification
+        {
+            UserId = user.Id,
+            Message = notificationMessage,
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false 
+        };
+
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync();
+    }
+
 
 
 }

@@ -13,6 +13,7 @@ namespace FrogCar.Data
         public DbSet<CarRental> CarRentals { get; set; }
         public DbSet<CarRentalReview> CarRentalReviews { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

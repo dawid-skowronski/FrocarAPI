@@ -5,6 +5,7 @@ using System.Security.Claims;
 using FrogCar.Data;
 using FrogCar.Models;
 using System;
+using FrogCar.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -12,10 +13,12 @@ using System;
 public class CarListingsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public CarListingsController(AppDbContext context)
+    public CarListingsController(AppDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     [HttpPost("create")]
@@ -57,6 +60,19 @@ public class CarListingsController : ControllerBase
         _context.CarListing.Add(carListing);
         await _context.SaveChangesAsync();
 
+        var admins = await _context.Users
+        .Where(u => u.Role == "Admin")
+        .ToListAsync();
+
+        foreach (var admin in admins)
+        {
+            await _notificationService.CreateNotificationAsync(
+                admin.Id,
+                null,
+                $"Użytkownik o ID {userId} dodał nowe ogłoszenie do zatwierdzenia."
+            );
+        }
+
         return Ok(new { message = "Ogłoszenie zostało dodane poprawnie, i oczekuje na zatwierdzenie przez Administratora", carListing });
     }
 
@@ -71,16 +87,28 @@ public class CarListingsController : ControllerBase
             return BadRequest("Brak uprawnień do zatwierdzenia ogłoszenia. Tylko administrator może to zrobić.");
         }
 
-        var listing = await _context.CarListing.FindAsync(id);
+        var listing = await _context.CarListing.FirstOrDefaultAsync(l => l.Id == id);
 
         if (listing == null)
             return NotFound("Ogłoszenie nie istnieje.");
 
         listing.IsApproved = true;
+
+        var notification = new Notification
+        {
+            UserId = listing.UserId, // zakładam, że masz to pole w CarListing
+            Message = $"Twoje ogłoszenie zostało zatwierdzone przez administratora.",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        };
+
+        _context.Notifications.Add(notification);
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Ogłoszenie zostało zatwierdzone.", listing });
     }
+
+
 
 
 
@@ -109,10 +137,6 @@ public class CarListingsController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-<<<<<<< HEAD
-=======
-        // Pobranie ogłoszeń danego użytkownika, które są zatwierdzone
->>>>>>> ed449c728b1fbb4ad275323d0623767cd278a676
         var listings = await _context.CarListing
             .Where(l => l.UserId == userId && l.IsApproved == true)
             .ToListAsync();

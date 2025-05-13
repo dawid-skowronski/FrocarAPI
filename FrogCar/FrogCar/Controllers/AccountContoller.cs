@@ -214,6 +214,47 @@ namespace FrogCar.Controllers
 
             return Ok("Twoje konto zostało usunięte.");
         }
+        [HttpGet("Notification")]
+        public async Task<IActionResult> GetMyNotifications()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized(new { message = "Nie udało się odczytać ID użytkownika." });
+
+            var notifications = await _context.Notifications
+                .Where(n => n.UserId == int.Parse(userId) && !n.IsRead) 
+                .OrderByDescending(n => n.CreatedAt)
+                .Include(n => n.User)
+                .ToListAsync();
+
+            if (notifications == null || notifications.Count == 0)
+            {
+                return Ok(new { message = "Brak nowych powiadomień." });
+            }
+
+            return Ok(notifications);
+        }
+
+
+        [HttpPatch("Notification/{notificationId}")]
+        public async Task<IActionResult> MarkAsRead(int notificationId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized(new { message = "Nie udało się odczytać ID użytkownika." });
+
+            var notification = await _context.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.UserId == int.Parse(userId));
+
+            if (notification == null)
+                return NotFound(new { message = "Powiadomienie nie zostało znalezione." });
+
+            notification.IsRead = true;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Powiadomienie zostało oznaczone jako przeczytane." });
+        }
 
     }
 }
