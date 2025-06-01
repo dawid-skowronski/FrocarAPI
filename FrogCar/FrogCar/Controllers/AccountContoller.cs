@@ -21,11 +21,13 @@ namespace FrogCar.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly EmailService _emailService;
 
-        public AccountController(AppDbContext context, IConfiguration configuration)
+        public AccountController(AppDbContext context, IConfiguration configuration, EmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
         
         [HttpPost("register")]
@@ -235,7 +237,6 @@ namespace FrogCar.Controllers
             return Ok(notifications);
         }
 
-
         [HttpPatch("Notification/{notificationId}")]
         public async Task<IActionResult> MarkAsRead(int notificationId)
         {
@@ -256,5 +257,101 @@ namespace FrogCar.Controllers
             return Ok(new { message = "Powiadomienie zostało oznaczone jako przeczytane." });
         }
 
+
+        [HttpPost("request-password-reset")]
+        public async Task<IActionResult> RequestPasswordReset([FromBody] string email)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return BadRequest(new { message = "Nie znaleziono użytkownika o podanym adresie e-mail." });
+
+                var secretKey = _configuration["Jwt:EmailSecretKey"];
+                if (string.IsNullOrEmpty(secretKey))
+                    return StatusCode(500, new { message = "Brakuje klucza EmailSecretKey w konfiguracji." });
+
+                var key = Encoding.UTF8.GetBytes(secretKey);
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) }),
+                    Expires = DateTime.UtcNow.AddHours(1),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                var resetToken = tokenHandler.WriteToken(token);
+
+                var frontendUrl = _configuration["Frontend:ResetPasswordUrl"];
+                if (string.IsNullOrEmpty(frontendUrl))
+                    return StatusCode(500, new { message = "Brakuje adresu ResetPasswordUrl w konfiguracji." });
+
+                var resetLink = $"{frontendUrl}?token={resetToken}";
+
+                var emailBody = $@"
+            <p>Cześć {user.Username},</p>
+            <p>Otrzymaliśmy prośbę o zresetowanie Twojego hasła. Kliknij poniższy link, aby ustawić nowe hasło:</p>
+            <p><a href='{resetLink}'>Resetuj hasło</a></p>
+            <p>Jeśli to nie Ty, zignoruj tę wiadomość.</p>";
+
+                await _emailService.SendEmailAsync(user.Email, "Resetowanie hasła", emailBody);
+
+                return Ok(new { message = "Link do resetu hasła został wysłany na podany adres e-mail." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[BŁĄD] Reset hasła nie powiódł się: {ex.Message}");
+                return StatusCode(500, new { message = "Wystąpił błąd serwera.", error = ex.Message });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel model)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_configuration["Jwt:EmailSecretKey"]);
+
+                var parameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                var principal = handler.ValidateToken(model.Token, parameters, out _);
+                var userId = int.Parse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return BadRequest(new { message = "Nieprawidłowy token resetujący." });
+                }
+
+                var passwordError = ValidatePassword(model.NewPassword);
+                if (!string.IsNullOrEmpty(passwordError))
+                {
+                    return BadRequest(new { message = passwordError });
+                }
+
+                user.Password = HashPassword(model.NewPassword);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Hasło zostało zresetowane pomyślnie." });
+            }
+            catch (SecurityTokenException)
+            {
+                return BadRequest(new { message = "Nieprawidłowy lub wygasły token resetujący." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Wystąpił błąd serwera.", error = ex.Message });
+            }
+        }
     }
 }

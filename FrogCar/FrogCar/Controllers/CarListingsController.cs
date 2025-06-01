@@ -96,7 +96,7 @@ public class CarListingsController : ControllerBase
 
         var notification = new Notification
         {
-            UserId = listing.UserId, // zakładam, że masz to pole w CarListing
+            UserId = listing.UserId,
             Message = $"Twoje ogłoszenie zostało zatwierdzone przez administratora.",
             CreatedAt = DateTime.UtcNow,
             IsRead = false
@@ -107,10 +107,6 @@ public class CarListingsController : ControllerBase
 
         return Ok(new { message = "Ogłoszenie zostało zatwierdzone.", listing });
     }
-
-
-
-
 
     [HttpPut("{id}/availability")]
     public async Task<IActionResult> UpdateCarAvailability(int id, [FromBody] bool isAvailable)

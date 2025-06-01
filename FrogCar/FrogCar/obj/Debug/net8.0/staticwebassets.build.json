@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "GgMVobIUtQR+3F+d5O/PwoXivFdHG3Kjhr2gqK8CUtM=",
+  "Hash": "XqiNOELJ/nOtR9zR4oKzfaG+uORo2U26ZjDd3ha7/K8=",
   "Source": "FrogCar",
   "BasePath": "_content/FrogCar",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

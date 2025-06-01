@@ -140,9 +140,6 @@ public class AdminController : ControllerBase
         return Ok("Recenzja została usunięta.");
     }
 
-
-
-
     [HttpPut("user/{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserModel model)
     {
@@ -185,7 +182,7 @@ public class AdminController : ControllerBase
             TotalListings = await _context.CarListing.CountAsync(),
             ActiveListings = await _context.CarListing.CountAsync(c => c.IsAvailable && c.IsApproved),
             TotalRentals = await _context.CarRentals.CountAsync(),
-            EndedRentals = await _context.CarRentals.CountAsync(r => r.RentalStatus == "Ended"),
+            EndedRentals = await _context.CarRentals.CountAsync(r => r.RentalStatus == "Zakończone"),
             TotalReviews = await _context.CarRentalReviews.CountAsync(),
             AverageRating = Math.Round(await _context.CarRentalReviews.AverageAsync(r => (double?)r.Rating) ?? 0, 2)
         };
@@ -200,7 +197,7 @@ public class AdminController : ControllerBase
             return BadRequest("Brak uprawnień administratora.");
 
         var totalRevenue = await _context.CarRentals.SumAsync(r => (decimal?)r.RentalPrice) ?? 0;
-        var endedRentals = await _context.CarRentals.CountAsync(r => r.RentalStatus == "Ended");
+        var endedRentals = await _context.CarRentals.CountAsync(r => r.RentalStatus == "Zakończone");
         var averageRevenue = endedRentals > 0 ? totalRevenue / endedRentals : 0;
 
         var last30DaysRevenue = await _context.CarRentals

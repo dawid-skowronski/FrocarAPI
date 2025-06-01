@@ -24,28 +24,25 @@ namespace FrogCar.Controllers
         {
             var now = DateTime.Now;
 
-            // Pobierz wypożyczenia, które zakończyły się, ale jeszcze nie zostały oznaczone jako "Ended"
+            
             var rentals = await _context.CarRentals
-                .Include(r => r.CarListing) // Dołącz dane samochodu, aby móc zmienić dostępność
-                .Where(r => r.RentalEndDate < now && r.RentalStatus != "Ended")
+                .Include(r => r.CarListing) 
+                .Where(r => r.RentalEndDate < now && r.RentalStatus != "Zakończone")
                 .ToListAsync();
 
             foreach (var rental in rentals)
             {
-                rental.RentalStatus = "Ended"; // Zmiana statusu wypożyczenia na "Ended"
+                rental.RentalStatus = "Zakończone"; 
 
-                // Ustawienie samochodu jako dostępnego
                 if (rental.CarListing != null)
                 {
                     rental.CarListing.IsAvailable = true;
                 }
 
-                // Wyślij powiadomienie do użytkownika
+                
                 var message = $"Twoje wypożyczenie samochodu o ID {rental.CarRentalId} zostało zakończone.";
                 await _notificationService.CreateNotificationAsync(rental.UserId, "Wypożyczenie zakończone", message);
             }
-
-            // Zapisz zmiany w bazie danych
             await _context.SaveChangesAsync();
         }
     }

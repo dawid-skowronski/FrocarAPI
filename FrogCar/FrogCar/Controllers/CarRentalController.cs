@@ -65,7 +65,7 @@ public class CarRentalController : ControllerBase
             RentalStartDate = carRentalRequest.RentalStartDate,
             RentalEndDate = carRentalRequest.RentalEndDate,
             RentalPrice = rentalPrice,
-            RentalStatus = "Active"
+            RentalStatus = "Aktywne"
         };
 
         _context.CarRentals.Add(carRental);
@@ -75,16 +75,13 @@ public class CarRentalController : ControllerBase
         return Ok(new { message = "Wypożyczenie zostało dodane.", carRental });
     }
 
-
-
-
     [HttpGet("user")]
     public async Task<IActionResult> GetUserCarRentals()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
         var rentals = await _context.CarRentals
-            .Where(r => r.UserId == userId && r.RentalStatus != "Ended")
+            .Where(r => r.UserId == userId && r.RentalStatus != "Zakończone")
             .Include(r => r.CarListing)
             .Include(r => r.User)
             .ToListAsync();
@@ -148,7 +145,7 @@ public class CarRentalController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
         var endedRentals = await _context.CarRentals
-            .Where(r => r.UserId == userId && r.RentalStatus == "Ended")
+            .Where(r => r.UserId == userId && r.RentalStatus == "Zakończone")
             .Include(r => r.CarListing)
             .Include(r => r.User)
             .ToListAsync();
@@ -173,7 +170,7 @@ public class CarRentalController : ControllerBase
         if (rental == null)
             return NotFound("Nie znaleziono wypożyczenia.");
 
-        if (rental.RentalStatus != "Ended")
+        if (rental.RentalStatus != "Zakończone")
             return BadRequest("Recenzja może być wystawiona tylko dla zakończonych wypożyczeń.");
 
         var existingReview = await _context.CarRentalReviews
@@ -279,7 +276,4 @@ public class CarRentalController : ControllerBase
         _context.Notifications.Add(notification);
         await _context.SaveChangesAsync();
     }
-
-
-
 }
