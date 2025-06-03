@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Hangfire;
 using Hangfire.SqlServer;
 using FrogCar.Controllers;
-
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +24,6 @@ builder.Services.AddCors(options =>
                   .AllowCredentials();
         });
 });
-
 
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -44,12 +43,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<EmailService>();
-
+builder.Services.AddScoped<IPasswordValidator, PasswordValidator>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddControllers();
 
 builder.Services.AddHangfire(config =>
     config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHangfireServer();
-
 
 builder.Services.AddScoped<IRentalService, RentalService>();
 
@@ -75,14 +75,10 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition("Bearer", securityScheme);
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        {
-            securityScheme,
-            new string[] {}
-        }
+        { securityScheme, new string[] {} }
     });
 });
 
-builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
@@ -99,7 +95,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHangfireDashboard();
 
 app.UseMiddleware<AuthenticationMiddleware>();
@@ -115,11 +110,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-
 RecurringJob.AddOrUpdate<IRentalService>(
     "update-ended-rentals",
     service => service.UpdateEndedRentalsAsync(),
-    Cron.Minutely 
+    Cron.Minutely
 );
 
 app.Run();

@@ -20,7 +20,6 @@ public class EmailService
             var testMode = _configuration["Email:TestMode"];
             if (testMode == "true")
             {
-                Console.WriteLine($"[TestMode] Skipping SMTP send for email to {toEmail}");
                 return;
             }
 

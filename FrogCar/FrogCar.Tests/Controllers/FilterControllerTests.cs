@@ -1,525 +1,304 @@
-﻿using FrogCar.Controllers;
-using FrogCar.Data;
-using FrogCar.Models;
+﻿using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FrogCar.Data;
+using FrogCar.Models;
 
-namespace FrogCar.Tests.Controllers
+namespace FrogCar.Tests.Controllers;
+public class FilterControllerTests : IDisposable
 {
-    public class FilterControllerTests
+    private readonly AppDbContext _context;
+    private readonly FilterController _controller;
+
+    public FilterControllerTests()
     {
-        private readonly AppDbContext _context;
-        private readonly FilterController _controller;
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        _context = new AppDbContext(options);
 
-        public FilterControllerTests()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) 
-                .Options;
-            _context = new AppDbContext(options);
-            _controller = new FilterController(_context);
-        }
+        SeedDatabase();
 
-        private async Task SetupCarListings()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "Toyota",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Honda",
-                    EngineCapacity = 1.8,
-                    FuelType = "Petrol",
-                    CarType = "Hatchback",
-                    Seats = 4,
-                    RentalPricePerDay = 40m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 3,
-                    Brand = "BMW",
-                    EngineCapacity = 3.0,
-                    FuelType = "Diesel",
-                    CarType = "SUV",
-                    Seats = 7,
-                    RentalPricePerDay = 100m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 4,
-                    Brand = "Audi",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 80m,
-                    IsApproved = false, 
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
-        }
+        _controller = new FilterController(_context);
+    }
 
-        [Fact]
-        public async Task GetByPriceDesc_HasApprovedAvailableCars_ReturnsOrderedList()
-        {
-            await SetupCarListings();
+    private void SeedDatabase()
+    {
+        _context.CarListing.RemoveRange(_context.CarListing);
+        _context.SaveChanges();
 
-            var result = await _controller.GetByPriceDesc();
+        _context.CarListing.Add(new CarListing { Id = 1, Brand = "Toyota", EngineCapacity = 2.0, RentalPricePerDay = 50, Seats = 5, IsAvailable = true, IsApproved = true });
+        _context.CarListing.Add(new CarListing { Id = 2, Brand = "Honda", EngineCapacity = 1.8, RentalPricePerDay = 40, Seats = 4, IsAvailable = true, IsApproved = true });
+        _context.CarListing.Add(new CarListing { Id = 3, Brand = "Ford", EngineCapacity = 2.5, RentalPricePerDay = 60, Seats = 5, IsAvailable = true, IsApproved = true });
+        _context.CarListing.Add(new CarListing { Id = 4, Brand = "BMW", EngineCapacity = 3.0, RentalPricePerDay = 70, Seats = 2, IsAvailable = true, IsApproved = true });
+        _context.CarListing.Add(new CarListing { Id = 5, Brand = "Audi", EngineCapacity = 2.2, RentalPricePerDay = 55, Seats = 5, IsAvailable = true, IsApproved = true });
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(3, cars.Count); 
-            Assert.Equal(100m, cars[0].RentalPricePerDay); 
-            Assert.Equal(50m, cars[1].RentalPricePerDay); 
-            Assert.Equal(40m, cars[2].RentalPricePerDay); 
-        }
+        _context.CarListing.Add(new CarListing { Id = 6, Brand = "Nissan", EngineCapacity = 1.6, RentalPricePerDay = 35, Seats = 5, IsAvailable = false, IsApproved = true });
 
-        [Fact]
-        public async Task GetByPriceDesc_NoApprovedAvailableCars_ReturnsEmptyList()
-        {
+        _context.CarListing.Add(new CarListing { Id = 7, Brand = "Mercedes", EngineCapacity = 3.5, RentalPricePerDay = 80, Seats = 7, IsAvailable = true, IsApproved = false });
 
-            var result = await _controller.GetByPriceDesc();
+        _context.SaveChanges();
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Empty(cars);
-        }
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
 
-        [Fact]
-        public async Task GetByPriceAsc_HasApprovedAvailableCars_ReturnsOrderedList()
-        {
-            await SetupCarListings();
+    [Fact]
+    public async Task GetByPriceDesc_ReturnsCarsSortedByPriceDescending()
+    {
+        var result = await _controller.GetByPriceDesc();
 
-            var result = await _controller.GetByPriceAsc();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(3, cars.Count);
-            Assert.Equal(40m, cars[0].RentalPricePerDay);
-            Assert.Equal(50m, cars[1].RentalPricePerDay); 
-            Assert.Equal(100m, cars[2].RentalPricePerDay);
-        }
+        var nonApprovedOrUnavailableCars = cars.Where(c => !c.IsApproved || !c.IsAvailable).ToList();
+        Assert.Empty(nonApprovedOrUnavailableCars);
 
-        [Fact]
-        public async Task GetByEngineCapacity_HasApprovedAvailableCars_ReturnsOrderedList()
-        {
-            await SetupCarListings();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("BMW", cars[0].Brand);
+        Assert.Equal("Ford", cars[1].Brand);
+        Assert.Equal("Audi", cars[2].Brand);
+        Assert.Equal("Toyota", cars[3].Brand);
+        Assert.Equal("Honda", cars[4].Brand);
+    }
 
-            var result = await _controller.GetByEngineCapacity();
+    [Fact]
+    public async Task GetByPriceAsc_ReturnsCarsSortedByPriceAscending()
+    {
+        var result = await _controller.GetByPriceAsc();
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(3, cars.Count);
-            Assert.Equal(1.8, cars[0].EngineCapacity);
-            Assert.Equal(2.0, cars[1].EngineCapacity);
-            Assert.Equal(3.0, cars[2].EngineCapacity);
-        }
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-        [Fact]
-        public async Task GetByBrandAsc_HasApprovedAvailableCars_ReturnsOrderedList()
-        {
-            await SetupCarListings();
+        var nonApprovedOrUnavailableCars = cars.Where(c => !c.IsApproved || !c.IsAvailable).ToList();
+        Assert.Empty(nonApprovedOrUnavailableCars);
 
-            var result = await _controller.GetByBrandAsc();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Honda", cars[0].Brand);
+        Assert.Equal("Toyota", cars[1].Brand);
+        Assert.Equal("Audi", cars[2].Brand);
+        Assert.Equal("Ford", cars[3].Brand);
+        Assert.Equal("BMW", cars[4].Brand);
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(3, cars.Count);
-            Assert.Equal("BMW", cars[0].Brand);
-            Assert.Equal("Honda", cars[1].Brand);
-            Assert.Equal("Toyota", cars[2].Brand);
-        }
+    [Fact]
+    public async Task GetByEngineCapacity_ReturnsCarsSortedByEngineCapacity()
+    {
+        var result = await _controller.GetByEngineCapacity();
 
-        [Fact]
-        public async Task GetByBrandDesc_HasApprovedAvailableCars_ReturnsOrderedList()
-        {
-            await SetupCarListings();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var result = await _controller.GetByBrandDesc();
+        var nonApprovedOrUnavailableCars = cars.Where(c => !c.IsApproved || !c.IsAvailable).ToList();
+        Assert.Empty(nonApprovedOrUnavailableCars);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(3, cars.Count);
-            Assert.Equal("Toyota", cars[0].Brand);
-            Assert.Equal("Honda", cars[1].Brand);
-            Assert.Equal("BMW", cars[2].Brand);
-        }
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Honda", cars[0].Brand);
+        Assert.Equal("Toyota", cars[1].Brand);
+        Assert.Equal("Audi", cars[2].Brand);
+        Assert.Equal("Ford", cars[3].Brand);
+        Assert.Equal("BMW", cars[4].Brand);
+    }
 
-        [Fact]
-        public async Task GetBySeats_HasApprovedAvailableCars_ReturnsOrderedList()
-        {
-            await SetupCarListings();
+    [Fact]
+    public async Task GetByBrandAsc_ReturnsCarsSortedByBrandAscending()
+    {
+        var result = await _controller.GetByBrandAsc();
 
-            var result = await _controller.GetBySeats();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(3, cars.Count);
-            Assert.Equal(4, cars[0].Seats);
-            Assert.Equal(5, cars[1].Seats);
-            Assert.Equal(7, cars[2].Seats);
-        }
+        var nonApprovedOrUnavailableCars = cars.Where(c => !c.IsApproved || !c.IsAvailable).ToList();
+        Assert.Empty(nonApprovedOrUnavailableCars);
 
-        [Fact]
-        public async Task GetBySeats_NoApprovedAvailableCars_ReturnsEmptyList()
-        {
-            var car = new CarListing
-            {
-                Id = 1,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m,
-                IsApproved = false,
-                IsAvailable = true
-            };
-            _context.CarListing.Add(car);
-            await _context.SaveChangesAsync();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Audi", cars[0].Brand);
+        Assert.Equal("BMW", cars[1].Brand);
+    }
 
-            var result = await _controller.GetBySeats();
+    [Fact]
+    public async Task GetByBrandDesc_ReturnsCarsSortedByBrandDescending()
+    {
+        var result = await _controller.GetByBrandDesc();
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Empty(cars);
-        }
-        [Fact]
-        public async Task GetByPriceDesc_DuplicatePrices_ReturnsOrderedList()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "Toyota",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Honda",
-                    EngineCapacity = 1.8,
-                    FuelType = "Petrol",
-                    CarType = "Hatchback",
-                    Seats = 4,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 3,
-                    Brand = "BMW",
-                    EngineCapacity = 3.0,
-                    FuelType = "Diesel",
-                    CarType = "SUV",
-                    Seats = 7,
-                    RentalPricePerDay = 100m,
-                    IsApproved = true,
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var result = await _controller.GetByPriceDesc();
+        var nonApprovedOrUnavailableCars = cars.Where(c => !c.IsApproved || !c.IsAvailable).ToList();
+        Assert.Empty(nonApprovedOrUnavailableCars);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(3, returnedCars.Count);
-            Assert.Equal(100m, returnedCars[0].RentalPricePerDay);
-            Assert.Equal(50m, returnedCars[1].RentalPricePerDay);
-            Assert.Equal(50m, returnedCars[2].RentalPricePerDay);
-        }
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Toyota", cars[0].Brand);
+        Assert.Equal("Honda", cars[1].Brand);
+    }
 
-        [Fact]
-        public async Task GetByEngineCapacity_SameCapacity_ReturnsOrderedList()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "Toyota",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Audi",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 80m,
-                    IsApproved = true,
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
+    [Fact]
+    public async Task GetBySeats_ReturnsCarsSortedBySeats()
+    {
+        var result = await _controller.GetBySeats();
 
-            var result = await _controller.GetByEngineCapacity();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedCars.Count);
-            Assert.Equal(2.0, returnedCars[0].EngineCapacity);
-            Assert.Equal(2.0, returnedCars[1].EngineCapacity);
-        }
+        var nonApprovedOrUnavailableCars = cars.Where(c => !c.IsApproved || !c.IsAvailable).ToList();
+        Assert.Empty(nonApprovedOrUnavailableCars);
 
-        [Fact]
-        public async Task GetBySeats_SomeUnavailableCars_ReturnsOnlyAvailable()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "Toyota",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Honda",
-                    EngineCapacity = 1.8,
-                    FuelType = "Petrol",
-                    CarType = "Hatchback",
-                    Seats = 4,
-                    RentalPricePerDay = 40m,
-                    IsApproved = true,
-                    IsAvailable = false 
-                },
-                new CarListing
-                {
-                    Id = 3,
-                    Brand = "BMW",
-                    EngineCapacity = 3.0,
-                    FuelType = "Diesel",
-                    CarType = "SUV",
-                    Seats = 7,
-                    RentalPricePerDay = 100m,
-                    IsApproved = true,
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("BMW", cars[0].Brand);
+        Assert.Equal("Honda", cars[1].Brand);
 
-            var result = await _controller.GetBySeats();
+        Assert.True(cars.Any(c => c.Id == 1 && c.Seats == 5));
+        Assert.True(cars.Any(c => c.Id == 3 && c.Seats == 5));
+        Assert.True(cars.Any(c => c.Id == 5 && c.Seats == 5));
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedCars.Count);
-            Assert.Equal(5, returnedCars[0].Seats);
-            Assert.Equal(7, returnedCars[1].Seats);
-        }
+    [Fact]
+    public async Task Filter_SortByPriceAsc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("price", true);
 
-        [Fact]
-        public async Task GetByPriceAsc_ZeroPrice_ReturnsOrderedList()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "Toyota",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 0m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Honda",
-                    EngineCapacity = 1.8,
-                    FuelType = "Petrol",
-                    CarType = "Hatchback",
-                    Seats = 4,
-                    RentalPricePerDay = 40m,
-                    IsApproved = true,
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var result = await _controller.GetByPriceAsc();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Honda", cars[0].Brand);
+        Assert.Equal("Toyota", cars[1].Brand);
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedCars.Count);
-            Assert.Equal(0m, returnedCars[0].RentalPricePerDay);
-            Assert.Equal(40m, returnedCars[1].RentalPricePerDay);
-        }
+    [Fact]
+    public async Task Filter_SortByPriceDesc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("price", false);
 
-        [Fact]
-        public async Task GetByBrandAsc_EmptyBrand_ReturnsOrderedList()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Honda",
-                    EngineCapacity = 1.8,
-                    FuelType = "Petrol",
-                    CarType = "Hatchback",
-                    Seats = 4,
-                    RentalPricePerDay = 40m,
-                    IsApproved = true,
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var result = await _controller.GetByBrandAsc();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("BMW", cars[0].Brand);
+        Assert.Equal("Ford", cars[1].Brand);
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedCars.Count);
-            Assert.Equal("", returnedCars[0].Brand);
-            Assert.Equal("Honda", returnedCars[1].Brand);
-        }
+    [Fact]
+    public async Task Filter_SortByBrandAsc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("brand", true);
 
-        [Fact]
-        public async Task GetByEngineCapacity_MinimalCapacity_ReturnsOrderedList()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "Toyota",
-                    EngineCapacity = 0.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Honda",
-                    EngineCapacity = 1.8,
-                    FuelType = "Petrol",
-                    CarType = "Hatchback",
-                    Seats = 4,
-                    RentalPricePerDay = 40m,
-                    IsApproved = true,
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var result = await _controller.GetByEngineCapacity();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Audi", cars[0].Brand);
+        Assert.Equal("BMW", cars[1].Brand);
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedCars.Count);
-            Assert.Equal(0.0, returnedCars[0].EngineCapacity);
-            Assert.Equal(1.8, returnedCars[1].EngineCapacity);
-        }
+    [Fact]
+    public async Task Filter_SortByBrandDesc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("brand", false);
 
-        [Fact]
-        public async Task GetBySeats_DuplicateSeats_ReturnsOrderedList()
-        {
-            var cars = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    Brand = "Toyota",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    Brand = "Audi",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5, 
-                    RentalPricePerDay = 80m,
-                    IsApproved = true,
-                    IsAvailable = true
-                }
-            };
-            _context.CarListing.AddRange(cars);
-            await _context.SaveChangesAsync();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
 
-            var result = await _controller.GetBySeats();
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Toyota", cars[0].Brand);
+        Assert.Equal("Honda", cars[1].Brand);
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedCars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedCars.Count);
-            Assert.Equal(5, returnedCars[0].Seats);
-            Assert.Equal(5, returnedCars[1].Seats);
-        }
+    [Fact]
+    public async Task Filter_SortByEngineAsc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("engine", true);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
+
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("Honda", cars[0].Brand);
+        Assert.Equal("Toyota", cars[1].Brand);
+    }
+
+    [Fact]
+    public async Task Filter_SortByEngineDesc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("engine", false);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
+
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("BMW", cars[0].Brand);
+        Assert.Equal("Ford", cars[1].Brand);
+    }
+
+    [Fact]
+    public async Task Filter_SortBySeatsAsc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("seats", true);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
+
+        Assert.Equal(5, cars.Count);
+        Assert.Equal("BMW", cars[0].Brand);
+        Assert.Equal("Honda", cars[1].Brand);
+    }
+
+    [Fact]
+    public async Task Filter_SortBySeatsDesc_ReturnsCorrectlySortedCars()
+    {
+        var result = await _controller.Filter("seats", false);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
+
+        Assert.True(cars.Any(c => c.Id == 1 && c.Seats == 5));
+        Assert.True(cars.Any(c => c.Id == 3 && c.Seats == 5));
+        Assert.True(cars.Any(c => c.Id == 5 && c.Seats == 5)); 
+
+        Assert.Equal("Honda", cars[3].Brand);
+        Assert.Equal("BMW", cars[4].Brand);
+    }
+
+    [Fact]
+    public async Task Filter_InvalidSortByParameter_ReturnsDefaultSortedCarsById()
+    {
+        var result = await _controller.Filter("invalid_sort_key", true);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var cars = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
+
+        var nonApprovedOrUnavailableCars = cars.Where(c => !c.IsApproved || !c.IsAvailable).ToList();
+        Assert.Empty(nonApprovedOrUnavailableCars);
+
+        Assert.Equal(5, cars.Count);
+        Assert.Equal(1, cars[0].Id);
+        Assert.Equal(2, cars[1].Id);
+        Assert.Equal(3, cars[2].Id);
+        Assert.Equal(4, cars[3].Id);
+        Assert.Equal(5, cars[4].Id);
+    }
+
+    [Fact]
+    public async Task Filter_EmptySortByParameter_ReturnsBadRequest()
+    {
+        var result = await _controller.Filter("", true);
+
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Parametr sortBy jest wymagany.", badRequestResult.Value);
+    }
+
+    [Fact]
+    public async Task Filter_NullSortByParameter_ReturnsBadRequest()
+    {
+        var result = await _controller.Filter(null, true);
+
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Parametr sortBy jest wymagany.", badRequestResult.Value);
     }
 }

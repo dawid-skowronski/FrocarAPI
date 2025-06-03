@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj": {}
+    "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj": {
+    "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj",
         "projectName": "FrogCar.Tests",
-        "projectPath": "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj",
-        "packagesPath": "C:\\Users\\mateu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar.Tests\\obj\\",
+        "projectPath": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar.Tests\\FrogCar.Tests.csproj",
+        "packagesPath": "C:\\Users\\qloro\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar.Tests\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\mateu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\qloro\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -32,8 +28,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar\\FrogCar.csproj": {
-                "projectPath": "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar\\FrogCar.csproj"
+              "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar\\FrogCar.csproj": {
+                "projectPath": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar\\FrogCar.csproj"
               }
             }
           }
@@ -47,8 +43,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -111,25 +106,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar\\FrogCar.csproj": {
+    "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar\\FrogCar.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar\\FrogCar.csproj",
+        "projectUniqueName": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar\\FrogCar.csproj",
         "projectName": "FrogCar",
-        "projectPath": "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar\\FrogCar.csproj",
-        "packagesPath": "C:\\Users\\mateu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\mateu\\Desktop\\FrogCar\\FrogCar\\obj\\",
+        "projectPath": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar\\FrogCar.csproj",
+        "packagesPath": "C:\\Users\\qloro\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\qloro\\OneDrive\\Pulpit\\Mateusz\\FrogCarLocal\\FrogCar\\FrogCar\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\mateu\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\qloro\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -154,8 +145,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.200"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -164,6 +154,10 @@
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"
+            },
+            "FirebaseAdmin": {
+              "target": "Package",
+              "version": "[3.2.0, )"
             },
             "Hangfire": {
               "target": "Package",
@@ -221,7 +215,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

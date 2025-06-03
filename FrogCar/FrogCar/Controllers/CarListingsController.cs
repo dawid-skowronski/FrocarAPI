@@ -5,263 +5,327 @@ using System.Security.Claims;
 using FrogCar.Data;
 using FrogCar.Models;
 using System;
-using FrogCar.Controllers;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using FrogCar.Constants;
 
-[Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class CarListingsController : ControllerBase
+
+namespace FrogCar.Controllers
 {
-    private readonly AppDbContext _context;
-    private readonly INotificationService _notificationService;
-
-    public CarListingsController(AppDbContext context, INotificationService notificationService)
-    {
-        _context = context;
-        _notificationService = notificationService;
-    }
-
-    [HttpPost("create")]
-    public async Task<IActionResult> AddCarListing([FromBody] CarListing carListing)
-    {
-
-        if (!User.Identity.IsAuthenticated)
-            return Unauthorized(new { message = "Musisz być zalogowany, aby dodać ogłoszenie." });
-
-        if (carListing == null)
-            return BadRequest("Ogłoszenie nie może być puste.");
-
-        if (string.IsNullOrEmpty(carListing.Brand))
-            return BadRequest("Marka samochodu jest wymagana.");
-
-        if (carListing.EngineCapacity <= 0)
-            return BadRequest("Pojemność silnika musi być większa od 0.");
-
-        if (carListing.Seats <= 0)
-            return BadRequest("Liczba miejsc musi być większa od 0.");
-
-        if (string.IsNullOrEmpty(carListing.FuelType))
-            return BadRequest("Typ paliwa jest wymagany.");
-
-        if (string.IsNullOrEmpty(carListing.CarType))
-            return BadRequest("Typ samochodu jest wymagany.");
-
-        if (carListing.Features != null && carListing.Features.Any(f => string.IsNullOrEmpty(f)))
-            return BadRequest("Każda cecha musi być wypełniona poprawnie.");
-
-        if (carListing.RentalPricePerDay <= 0)
-            return BadRequest("Cena wynajmu na jeden dzień musi być większa niż 0.");
-
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        carListing.UserId = userId;
-        carListing.IsAvailable = true;
-        carListing.IsApproved = false;
-
-        _context.CarListing.Add(carListing);
-        await _context.SaveChangesAsync();
-
-        var admins = await _context.Users
-        .Where(u => u.Role == "Admin")
-        .ToListAsync();
-
-        foreach (var admin in admins)
-        {
-            await _notificationService.CreateNotificationAsync(
-                admin.Id,
-                null,
-                $"Użytkownik o ID {userId} dodał nowe ogłoszenie do zatwierdzenia."
-            );
-        }
-
-        return Ok(new { message = "Ogłoszenie zostało dodane poprawnie, i oczekuje na zatwierdzenie przez Administratora", carListing });
-    }
-
-    [HttpPut("{id}/approve")]
+    [Route("api/[controller]")]
+    [ApiController]
     [Authorize]
-    public async Task<IActionResult> ApproveListing(int id)
+    public class CarListingsController : ControllerBase
     {
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        private readonly AppDbContext _context;
+        private readonly INotificationService _notificationService;
+        private readonly ILogger<CarListingsController> _logger;
 
-        if (userRole != "Admin")
+        public CarListingsController(AppDbContext context, INotificationService notificationService, ILogger<CarListingsController> logger)
         {
-            return BadRequest("Brak uprawnień do zatwierdzenia ogłoszenia. Tylko administrator może to zrobić.");
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        var listing = await _context.CarListing.FirstOrDefaultAsync(l => l.Id == id);
-
-        if (listing == null)
-            return NotFound("Ogłoszenie nie istnieje.");
-
-        listing.IsApproved = true;
-
-        var notification = new Notification
+        private int GetCurrentUserId()
         {
-            UserId = listing.UserId,
-            Message = $"Twoje ogłoszenie zostało zatwierdzone przez administratora.",
-            CreatedAt = DateTime.UtcNow,
-            IsRead = false
-        };
-
-        _context.Notifications.Add(notification);
-        await _context.SaveChangesAsync();
-
-        return Ok(new { message = "Ogłoszenie zostało zatwierdzone.", listing });
-    }
-
-    [HttpPut("{id}/availability")]
-    public async Task<IActionResult> UpdateCarAvailability(int id, [FromBody] bool isAvailable)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-        var listing = await _context.CarListing.FindAsync(id);
-
-        if (listing == null)
-            return NotFound("Ogłoszenie nie istnieje.");
-
-        if (listing.UserId != userId && userRole != "Admin")
-            return BadRequest("To nie jest Twoje ogłoszenie. Tylko właściciel lub administrator może zmieniać dostępność.");
-
-        listing.IsAvailable = isAvailable;
-        await _context.SaveChangesAsync();
-
-        return Ok(new { message = "Status dostępności został zmieniony.", listing });
-    }
-
-
-    [HttpGet("user")]
-    public async Task<IActionResult> GetUserCarListings()
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-        var listings = await _context.CarListing
-            .Where(l => l.UserId == userId && l.IsApproved == true)
-            .ToListAsync();
-
-        if (listings == null || listings.Count == 0)
-            return NotFound("Brak zatwierdzonych ogłoszeń dla tego użytkownika.");
-
-        return Ok(listings);
-    }
-
-
-    [HttpGet("list")]
-    public async Task<IActionResult> GetAllCarListings(double? lat, double? lng, double radius = 50)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-        var listings = await _context.CarListing
-            .Where(l => l.IsApproved == true && l.UserId != userId &&
-                        !_context.CarRentals.Any(r => r.CarListingId == l.Id && r.RentalStatus == "Active"))
-            .ToListAsync();
-
-        if (listings == null || listings.Count == 0)
-            return NotFound("Brak ogłoszeń.");
-
-        if (lat.HasValue && lng.HasValue)
-        {
-            listings = listings.Where(listing =>
-                CalculateDistance(lat.Value, lng.Value, listing.Latitude, listing.Longitude) <= radius)
-                .ToList();
-
-            if (listings.Count == 0)
-                return NotFound("Brak dostępnych samochodów w podanym regionie.");
+            return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? throw new InvalidOperationException("User ID not found in claims."));
         }
 
-        return Ok(listings);
-    }
+        private string GetCurrentUserRole()
+        {
+            return User.FindFirst(ClaimTypes.Role)?.Value;
+        }
 
+        private bool IsCurrentUserAdmin()
+        {
+            return GetCurrentUserRole() == Roles.Admin;
+        }
 
+        private string ValidateCarListing(CarListing carListing)
+        {
+            if (carListing == null)
+                return ErrorMessages.BadRequestEmptyListing;
+            if (string.IsNullOrEmpty(carListing.Brand))
+                return ErrorMessages.BadRequestRequiredBrand;
+            if (carListing.EngineCapacity <= 0)
+                return ErrorMessages.BadRequestEngineCapacity;
+            if (carListing.Seats <= 0)
+                return ErrorMessages.BadRequestSeats;
+            if (string.IsNullOrEmpty(carListing.FuelType))
+                return ErrorMessages.BadRequestFuelType;
+            if (string.IsNullOrEmpty(carListing.CarType))
+                return ErrorMessages.BadRequestCarType;
+            if (carListing.Features != null && carListing.Features.Any(f => string.IsNullOrEmpty(f)))
+                return ErrorMessages.BadRequestInvalidFeature;
+            if (carListing.RentalPricePerDay <= 0)
+                return ErrorMessages.BadRequestRentalPrice;
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetCarListing(int id)
-    {
-        var listing = await _context.CarListing.FindAsync(id);
-        if (listing == null)
-            return NotFound("Ogłoszenie nie istnieje.");
+            return null;
+        }
 
-        return Ok(listing);
-    }
+        [HttpPost("create")]
+        public async Task<IActionResult> AddCarListing([FromBody] CarListing carListing)
+        {
+            _logger.LogInformation("Rozpoczynanie dodawania nowego ogłoszenia przez użytkownika ID: {UserId}", GetCurrentUserId());
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCarListing(int id)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var validationMessage = ValidateCarListing(carListing);
+            if (validationMessage != null)
+            {
+                _logger.LogWarning("Niepoprawne dane ogłoszenia: {Message}", validationMessage);
+                return BadRequest(new { message = validationMessage });
+            }
 
-        var listing = await _context.CarListing.FindAsync(id);
+            carListing.UserId = GetCurrentUserId();
+            carListing.IsAvailable = true;
+            carListing.IsApproved = false;
 
-        if (listing == null)
-            return NotFound("Ogłoszenie nie istnieje.");
+            _context.CarListing.Add(carListing);
+            await _context.SaveChangesAsync();
 
-        if (listing.UserId != userId && userRole != "Admin")
-            return Forbid("Nie masz uprawnień do usunięcia tego ogłoszenia.");
+            _logger.LogInformation("Ogłoszenie ID: {CarListingId} zostało dodane przez użytkownika ID: {UserId} i oczekuje na zatwierdzenie.", carListing.Id, carListing.UserId);
 
-        _context.CarListing.Remove(listing);
-        await _context.SaveChangesAsync();
+            await NotifyAdminsAboutNewListing(carListing.UserId);
 
-        return Ok("Ogłoszenie usunięte.");
-    }
+            return Ok(new { message = "Ogłoszenie zostało dodane i oczekuje na zatwierdzenie.", id = carListing.Id });
+        }
 
+        [HttpPut("{id}/approve")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> ApproveListing(int id)
+        {
+            _logger.LogInformation("Admin ID: {AdminId} próbuje zatwierdzić ogłoszenie ID: {CarListingId}", GetCurrentUserId(), id);
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCarListing(int id, [FromBody] CarListing updatedListing)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-        var listing = await _context.CarListing.FindAsync(id);
+            var listing = await _context.CarListing.FirstOrDefaultAsync(l => l.Id == id);
 
-        if (listing == null)
-            return NotFound("Ogłoszenie nie istnieje.");
-        if (listing.UserId != userId && userRole != "Admin")
-            return BadRequest("To nie jest Twoje ogłoszenie. Tylko właściciel może je edytować.");
-        if (string.IsNullOrEmpty(updatedListing.Brand))
-            return BadRequest("Marka samochodu jest wymagana.");
-        if (updatedListing.EngineCapacity <= 0)
-            return BadRequest("Pojemność silnika musi być większa od 0.");
-        if (updatedListing.Seats <= 0)
-            return BadRequest("Liczba miejsc musi być większa od 0.");
-        if (string.IsNullOrEmpty(updatedListing.FuelType))
-            return BadRequest("Typ paliwa jest wymagany.");
-        if (string.IsNullOrEmpty(updatedListing.CarType))
-            return BadRequest("Typ samochodu jest wymagany.");
-        if (updatedListing.Features != null && updatedListing.Features.Any(f => string.IsNullOrEmpty(f)))
-            return BadRequest("Każda cecha musi być wypełniona poprawnie.");
-        if (updatedListing.RentalPricePerDay <= 0)
-            return BadRequest("Cena wynajmu na jeden dzień musi być większa niż 0.");
+            if (listing == null)
+            {
+                _logger.LogWarning("Admin próbował zatwierdzić nieistniejące ogłoszenie ID: {CarListingId}", id);
+                return NotFound(new { message = ErrorMessages.ListingNotFound });
+            }
 
-        listing.Brand = updatedListing.Brand;
-        listing.EngineCapacity = updatedListing.EngineCapacity;
-        listing.FuelType = updatedListing.FuelType;
-        listing.Seats = updatedListing.Seats;
-        listing.CarType = updatedListing.CarType;
-        listing.Features = updatedListing.Features;
-        listing.Latitude = updatedListing.Latitude;
-        listing.Longitude = updatedListing.Longitude;
-        listing.RentalPricePerDay = updatedListing.RentalPricePerDay;
+            if (listing.IsApproved)
+            {
+                _logger.LogWarning("Admin próbował zatwierdzić już zatwierdzone ogłoszenie ID: {CarListingId}", id);
+                return BadRequest(new { message = "Ogłoszenie jest już zatwierdzone." });
+            }
 
-        await _context.SaveChangesAsync();
+            listing.IsApproved = true;
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Ogłoszenie ID: {CarListingId} zostało zatwierdzone przez admina.", id);
 
-        return Ok(new { message = "Ogłoszenie zostało zaktualizowane.", listing });
-    }
+            await _notificationService.CreateNotificationAsync(
+                listing.UserId,
+                null,
+                $"Twoje ogłoszenie o ID: {listing.Id} zostało zatwierdzone przez administratora."
+            );
 
-    private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-    {
-        const double R = 6371; 
-        double dLat = ToRadians(lat2 - lat1);
-        double dLon = ToRadians(lon2 - lon1);
+            return Ok(new { message = "Ogłoszenie zostało zatwierdzone.", listing });
+        }
 
-        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                   Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
-                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        [HttpPut("{id}/availability")]
+        public async Task<IActionResult> UpdateCarAvailability(int id, [FromBody] bool isAvailable)
+        {
+            _logger.LogInformation("Użytkownik ID: {UserId} próbuje zmienić dostępność ogłoszenia ID: {CarListingId} na {IsAvailable}", GetCurrentUserId(), id, isAvailable);
 
-        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-        double distance = R * c; 
+            var listing = await _context.CarListing.FindAsync(id);
 
-        return distance;
-    }
+            if (listing == null)
+            {
+                _logger.LogWarning("Użytkownik ID: {UserId} próbował zmienić dostępność nieistniejącego ogłoszenia ID: {CarListingId}", GetCurrentUserId(), id);
+                return NotFound(new { message = ErrorMessages.ListingNotFound });
+            }
 
-    private double ToRadians(double degrees)
-    {
-        return degrees * Math.PI / 180;
+            if (listing.UserId != GetCurrentUserId() && !IsCurrentUserAdmin())
+            {
+                _logger.LogWarning("Użytkownik ID: {UserId} próbował zmienić dostępność ogłoszenia ID: {CarListingId}, do którego nie ma uprawnień.", GetCurrentUserId(), id);
+                return Unauthorized(new { message = ErrorMessages.NotOwnerOrAdmin });
+            }
+
+            listing.IsAvailable = isAvailable;
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Dostępność ogłoszenia ID: {CarListingId} zmieniono na {IsAvailable} przez użytkownika ID: {UserId}.", id, isAvailable, GetCurrentUserId());
+
+            return Ok(new { message = "Status dostępności został zmieniony.", listing });
+        }
+
+        [HttpGet("user")]
+        public async Task<IActionResult> GetUserCarListings()
+        {
+            _logger.LogInformation("Użytkownik ID: {UserId} próbuje pobrać swoje ogłoszenia.", GetCurrentUserId());
+
+            var listings = await _context.CarListing
+                .Where(l => l.UserId == GetCurrentUserId() && l.IsApproved)
+                .ToListAsync();
+
+            if (listings == null || listings.Count == 0)
+            {
+                _logger.LogInformation("Brak zatwierdzonych ogłoszeń dla użytkownika ID: {UserId}.", GetCurrentUserId());
+                return NotFound(new { message = ErrorMessages.NoApprovedListingsForUser });
+            }
+
+            _logger.LogInformation("Pomyślnie pobrano {Count} zatwierdzonych ogłoszeń dla użytkownika ID: {UserId}.", listings.Count, GetCurrentUserId());
+            return Ok(listings);
+        }
+
+        [HttpGet("list")]
+        public async Task<IActionResult> GetAllCarListings(double? lat, double? lng, double radius = 50)
+        {
+            _logger.LogInformation("Pobieranie ogłoszeń dla wszystkich użytkowników. Parametry lokalizacji: Lat={Lat}, Lng={Lng}, Radius={Radius}", lat, lng, radius);
+
+            var query = _context.CarListing
+                .Where(l => l.IsApproved && l.UserId != GetCurrentUserId() &&
+                            !_context.CarRentals.Any(r => r.CarListingId == l.Id && r.RentalStatus == "Active"));
+
+            var listings = await query.ToListAsync();
+
+            if (lat.HasValue && lng.HasValue)
+            {
+                var filteredListings = listings.Where(listing =>
+                        CalculateDistance(lat.Value, lng.Value, listing.Latitude, listing.Longitude) <= radius)
+                    .ToList();
+
+                if (filteredListings.Count == 0)
+                {
+                    _logger.LogInformation("Brak dostępnych samochodów w podanym regionie dla Lat={Lat}, Lng={Lng}, Radius={Radius}", lat, lng, radius);
+                    return Ok(new List<CarListing>());
+                }
+                _logger.LogInformation("Pomyślnie pobrano {Count} ogłoszeń w promieniu dla Lat={Lat}, Lng={Lng}, Radius={Radius}", filteredListings.Count, lat, lng, radius);
+                return Ok(filteredListings);
+            }
+
+            if (listings == null || listings.Count == 0)
+            {
+                _logger.LogInformation("Brak ogłoszeń spełniających kryteria.");
+                return Ok(new List<CarListing>());
+            }
+
+            _logger.LogInformation("Pomyślnie pobrano {Count} ogłoszeń (bez filtrowania lokalizacji).", listings.Count);
+            return Ok(listings);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCarListing(int id)
+        {
+            _logger.LogInformation("Użytkownik ID: {UserId} próbuje pobrać ogłoszenie ID: {CarListingId}", GetCurrentUserId(), id);
+            var listing = await _context.CarListing.FindAsync(id);
+            if (listing == null)
+            {
+                _logger.LogWarning("Próba pobrania nieistniejącego ogłoszenia ID: {CarListingId}", id);
+                return NotFound(new { message = ErrorMessages.ListingNotFound });
+            }
+
+            _logger.LogInformation("Pomyślnie pobrano ogłoszenie ID: {CarListingId}.", id);
+            return Ok(listing);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCarListing(int id)
+        {
+            _logger.LogInformation("Użytkownik ID: {UserId} próbuje usunąć ogłoszenie ID: {CarListingId}", GetCurrentUserId(), id);
+
+            var listing = await _context.CarListing.FindAsync(id);
+
+            if (listing == null)
+            {
+                _logger.LogWarning("Użytkownik ID: {UserId} próbował usunąć nieistniejące ogłoszenie ID: {CarListingId}", GetCurrentUserId(), id);
+                return NotFound(new { message = ErrorMessages.ListingNotFound });
+            }
+
+            if (listing.UserId != GetCurrentUserId() && !IsCurrentUserAdmin())
+            {
+                _logger.LogWarning("Użytkownik ID: {UserId} próbował usunąć ogłoszenie ID: {CarListingId}, do którego nie ma uprawnień.", GetCurrentUserId(), id);
+                return Unauthorized(new { message = ErrorMessages.NotOwnerOrAdmin });
+            }
+
+            _context.CarListing.Remove(listing);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Ogłoszenie ID: {CarListingId} zostało usunięte przez użytkownika ID: {UserId}.", id, GetCurrentUserId());
+
+            return Ok("Ogłoszenie usunięte.");
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCarListing(int id, [FromBody] CarListing updatedListing)
+        {
+            _logger.LogInformation("Użytkownik ID: {UserId} próbuje zaktualizować ogłoszenie ID: {CarListingId}", GetCurrentUserId(), id);
+
+            var listing = await _context.CarListing.FindAsync(id);
+
+            if (listing == null)
+            {
+                _logger.LogWarning("Użytkownik ID: {UserId} próbował zaktualizować nieistniejące ogłoszenie ID: {CarListingId}", GetCurrentUserId(), id);
+                return NotFound(new { message = ErrorMessages.ListingNotFound });
+            }
+
+            if (listing.UserId != GetCurrentUserId() && !IsCurrentUserAdmin())
+            {
+                _logger.LogWarning("Użytkownik ID: {UserId} próbował zaktualizować ogłoszenie ID: {CarListingId}, do którego nie ma uprawnień.", GetCurrentUserId(), id);
+                return Unauthorized(new { message = ErrorMessages.NotOwnerOrAdmin });
+            }
+
+            var validationMessage = ValidateCarListing(updatedListing);
+            if (validationMessage != null)
+            {
+                _logger.LogWarning("Niepoprawne dane ogłoszenia podczas aktualizacji ogłoszenia ID: {CarListingId}: {Message}", id, validationMessage);
+                return BadRequest(new { message = validationMessage });
+            }
+
+            listing.Brand = updatedListing.Brand;
+            listing.EngineCapacity = updatedListing.EngineCapacity;
+            listing.FuelType = updatedListing.FuelType;
+            listing.Seats = updatedListing.Seats;
+            listing.CarType = updatedListing.CarType;
+            listing.Features = updatedListing.Features;
+            listing.Latitude = updatedListing.Latitude;
+            listing.Longitude = updatedListing.Longitude;
+            listing.RentalPricePerDay = updatedListing.RentalPricePerDay;
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Ogłoszenie ID: {CarListingId} zostało zaktualizowane przez użytkownika ID: {UserId}.", id, GetCurrentUserId());
+
+            return Ok(new { message = "Ogłoszenie zostało zaktualizowane.", listing });
+        }
+
+        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371;
+            double dLat = ToRadians(lat2 - lat1);
+            double dLon = ToRadians(lon2 - lon1);
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                                 Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                                 Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            double distance = R * c;
+
+            return distance;
+        }
+
+        private double ToRadians(double degrees)
+        {
+            return degrees * Math.PI / 180;
+        }
+
+        private async Task NotifyAdminsAboutNewListing(int userId)
+        {
+            var admins = await _context.Users
+                .Where(u => u.Role == Roles.Admin)
+                .ToListAsync();
+
+            foreach (var admin in admins)
+            {
+                await _notificationService.CreateNotificationAsync(
+                    admin.Id,
+                    null,
+                    $"Użytkownik o ID {userId} dodał nowe ogłoszenie do zatwierdzenia."
+                );
+            }
+            _logger.LogInformation("Powiadomiono administratorów o nowym ogłoszeniu od użytkownika ID: {UserId}.", userId);
+        }
     }
 }

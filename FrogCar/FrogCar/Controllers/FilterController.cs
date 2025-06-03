@@ -81,4 +81,23 @@ public class FilterController : ControllerBase
 
         return Ok(cars);
     }
+
+    [HttpGet("filter")]
+    public async Task<IActionResult> Filter(string sortBy, bool ascending = true)
+    {
+        if (string.IsNullOrEmpty(sortBy))
+            return BadRequest("Parametr sortBy jest wymagany.");
+
+        var query = _context.CarListing.Where(c => c.IsApproved && c.IsAvailable);
+        query = sortBy.ToLower() switch
+        {
+            "price" => ascending ? query.OrderBy(c => c.RentalPricePerDay) : query.OrderByDescending(c => c.RentalPricePerDay),
+            "brand" => ascending ? query.OrderBy(c => c.Brand) : query.OrderByDescending(c => c.Brand),
+            "engine" => ascending ? query.OrderBy(c => c.EngineCapacity) : query.OrderByDescending(c => c.EngineCapacity),
+            "seats" => ascending ? query.OrderBy(c => c.Seats) : query.OrderByDescending(c => c.Seats),
+            _ => query.OrderBy(c => c.Id) 
+        };
+        return Ok(await query.ToListAsync());
+    }
+
 }

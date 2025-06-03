@@ -1,697 +1,496 @@
-﻿using FrogCar.Controllers;
+﻿using Xunit;
+using Moq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using FrogCar.Data;
 using FrogCar.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using System.Security.Claims;
-using Xunit;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using FrogCar.Constants;
+using FrogCar.Controllers;
+using System.Collections.Generic;
+using System.Text.Json;
 
-namespace FrogCar.Tests.Controllers
+namespace FrogCar.Tests.Controllers;
+public class CarListingsControllerTests : IDisposable
 {
-    public class CarListingsControllerTests
+    private readonly AppDbContext _context;
+    private readonly CarListingsController _controller;
+    private readonly Mock<INotificationService> _mockNotificationService;
+    private readonly Mock<ILogger<CarListingsController>> _mockLogger;
+
+    public CarListingsControllerTests()
     {
-        private readonly AppDbContext _context;
-        private readonly Mock<INotificationService> _notificationServiceMock;
-        private readonly CarListingsController _controller;
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        _context = new AppDbContext(options);
+        _mockNotificationService = new Mock<INotificationService>();
+        _mockLogger = new Mock<ILogger<CarListingsController>>();
 
-        public CarListingsControllerTests()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) 
-                .Options;
-            _context = new AppDbContext(options);
-            _notificationServiceMock = new Mock<INotificationService>();
-            _controller = new CarListingsController(_context, _notificationServiceMock.Object);
-        }
+        _controller = new CarListingsController(_context, _mockNotificationService.Object, _mockLogger.Object);
 
-        private void SetupUser(int userId, string role)
-        {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Role, role)
-            };
-            var identity = new ClaimsIdentity(claims, "TestAuthType");
-            var principal = new ClaimsPrincipal(identity);
-            _controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext { User = principal }
-            };
-        }
+        ClearDatabase();
+    }
 
-        [Fact]
-        public async Task AddCarListing_ValidData_ReturnsOk()
-        {
-            SetupUser(1, "User");
-            var carListing = new CarListing
-            {
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m,
-                Features = new List<string> { "AC", "GPS" }
-            };
-            var admin = new User { Id = 2, Username = "admin", Email = "admin@example.com", Role = "Admin", Password = "Password123!" };
-            _context.Users.Add(admin);
-            await _context.SaveChangesAsync();
-
-            var result = await _controller.AddCarListing(carListing);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = okResult.Value;
-            var messageProperty = returnValue.GetType().GetProperty("message");
-            var carListingProperty = returnValue.GetType().GetProperty("carListing");
-            var message = messageProperty.GetValue(returnValue);
-            var returnedCarListing = carListingProperty.GetValue(returnValue) as CarListing;
-
-            Assert.Equal("Ogłoszenie zostało dodane poprawnie, i oczekuje na zatwierdzenie przez Administratora", message);
-            Assert.Equal("Toyota", returnedCarListing.Brand);
-            Assert.Equal(1, returnedCarListing.UserId);
-            Assert.True(returnedCarListing.IsAvailable);
-            Assert.False(returnedCarListing.IsApproved);
-        }
-
-        [Fact]
-        public async Task AddCarListing_Unauthenticated_ReturnsUnauthorized()
-        {
-            _controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity()) }
-            };
-            var carListing = new CarListing { Brand = "Toyota" };
-
-            var result = await _controller.AddCarListing(carListing);
-
-            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
-            var returnValue = unauthorizedResult.Value;
-            var messageProperty = returnValue.GetType().GetProperty("message");
-            var message = messageProperty.GetValue(returnValue);
-            Assert.Equal("Musisz być zalogowany, aby dodać ogłoszenie.", message);
-        }
-
-        [Fact]
-        public async Task ApproveListing_AsAdmin_ReturnsOk()
-        {
-            SetupUser(1, "Admin");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 2,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50,
-                IsApproved = false
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
-
-            var result = await _controller.ApproveListing(1);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = okResult.Value;
-            var messageProperty = returnValue.GetType().GetProperty("message");
-            var listingProperty = returnValue.GetType().GetProperty("listing");
-            var message = messageProperty.GetValue(returnValue);
-            var returnedListing = listingProperty.GetValue(returnValue) as CarListing;
-
-            Assert.Equal("Ogłoszenie zostało zatwierdzone.", message);
-            Assert.True(returnedListing.IsApproved);
-
-            var notification = await _context.Notifications.FirstOrDefaultAsync();
-            Assert.NotNull(notification);
-            Assert.Equal(2, notification.UserId);
-            Assert.Equal("Twoje ogłoszenie zostało zatwierdzone przez administratora.", notification.Message);
-        }
-
-        [Fact]
-        public async Task ApproveListing_AsNonAdmin_ReturnsBadRequest()
-        {
-            SetupUser(1, "User");
-            var listing = new CarListing { Id = 1, UserId = 1 };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
-
-            var result = await _controller.ApproveListing(1);
-
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Brak uprawnień do zatwierdzenia ogłoszenia. Tylko administrator może to zrobić.", badRequestResult.Value);
-        }
-
-        [Fact]
-        public async Task UpdateCarAvailability_AsOwner_ReturnsOk()
-        {
-            SetupUser(1, "User");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 1,
-                Brand = "Toyota",
-                IsAvailable = true
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
-
-            var result = await _controller.UpdateCarAvailability(1, false);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = okResult.Value;
-            var messageProperty = returnValue.GetType().GetProperty("message");
-            var listingProperty = returnValue.GetType().GetProperty("listing");
-            var message = messageProperty.GetValue(returnValue);
-            var returnedListing = listingProperty.GetValue(returnValue) as CarListing;
-
-            Assert.Equal("Status dostępności został zmieniony.", message);
-            Assert.False(returnedListing.IsAvailable);
-        }
-
-        [Fact]
-        public async Task UpdateCarAvailability_AsNonOwner_ReturnsBadRequest()
-        {
-            SetupUser(2, "User");
-            var listing = new CarListing { Id = 1, UserId = 1, IsAvailable = true };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
-
-            var result = await _controller.UpdateCarAvailability(1, false);
-
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("To nie jest Twoje ogłoszenie. Tylko właściciel lub administrator może zmieniać dostępność.", badRequestResult.Value);
-        }
-
-        [Fact]
-        public async Task GetUserCarListings_HasListings_ReturnsOk()
-        {
-            SetupUser(1, "User");
-            var listings = new List<CarListing>
-            {
-                new CarListing { Id = 1, UserId = 1, Brand = "Toyota", IsApproved = true },
-                new CarListing { Id = 2, UserId = 1, Brand = "Honda", IsApproved = true }
-            };
-            _context.CarListing.AddRange(listings);
-            await _context.SaveChangesAsync();
-
-            var result = await _controller.GetUserCarListings();
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedListings = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedListings.Count);
-            Assert.Contains(returnedListings, l => l.Brand == "Toyota");
-            Assert.Contains(returnedListings, l => l.Brand == "Honda");
-        }
-
-        [Fact]
-        public async Task GetUserCarListings_NoListings_ReturnsNotFound()
-        {
-            SetupUser(1, "User");
-
-            var result = await _controller.GetUserCarListings();
-
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Brak zatwierdzonych ogłoszeń dla tego użytkownika.", notFoundResult.Value);
-        }
-
-        [Fact]
-        public async Task GetAllCarListings_WithLocation_ReturnsFilteredListings()
-        {
-            SetupUser(1, "User");
-            var listings = new List<CarListing>
-            {
-                new CarListing { Id = 1, UserId = 2, Brand = "Toyota", IsApproved = true, Latitude = 50.0, Longitude = 20.0 },
-                new CarListing { Id = 2, UserId = 2, Brand = "Honda", IsApproved = true, Latitude = 51.0, Longitude = 21.0 }
-            };
-            _context.CarListing.AddRange(listings);
-            await _context.SaveChangesAsync();
-
-            var result = await _controller.GetAllCarListings(50.0, 20.0, 100);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedListings = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Single(returnedListings); 
-            Assert.Equal("Toyota", returnedListings[0].Brand);
-        }
-        [Fact]
-        public async Task GetAllCarListings_NoLocation_ReturnsAllListings()
-        {
-            SetupUser(1, "User");
-            var listings = new List<CarListing>
+    private void ClearDatabase()
     {
-        new CarListing { Id = 1, UserId = 2, Brand = "Toyota", IsApproved = true },
-        new CarListing { Id = 2, UserId = 2, Brand = "Honda", IsApproved = true }
-    };
-            _context.CarListing.AddRange(listings);
-            await _context.SaveChangesAsync();
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+    }
 
-            var result = await _controller.GetAllCarListings(null, null);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedListings = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedListings.Count);
-        }
-
-        [Fact]
-        public async Task GetCarListing_Exists_ReturnsOk()
+    private void SetControllerUser(int userId, string role)
+    {
+        var claims = new List<Claim>
         {
-            var listing = new CarListing { Id = 1, Brand = "Toyota" };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Role, role)
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var principal = new ClaimsPrincipal(identity);
 
-            var result = await _controller.GetCarListing(1);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedListing = Assert.IsType<CarListing>(okResult.Value);
-            Assert.Equal("Toyota", returnedListing.Brand);
-        }
-        [Fact]
-        public async Task GetCarListing_DoesNotExist_ReturnsNotFound()
+        _controller.ControllerContext = new ControllerContext
         {
-            var result = await _controller.GetCarListing(1);
+            HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext { User = principal }
+        };
+    }
 
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Ogłoszenie nie istnieje.", notFoundResult.Value);
-        }
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
 
-        [Fact]
-        public async Task DeleteCarListing_AsOwner_ReturnsOk()
+    [Fact]
+    public async Task AddCarListing_ValidListing_ReturnsOkResultAndAddsListing()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var user = new User { Id = 1, Username = "testuser", Email = "test@example.com", Password = "hashedpassword", Role = Roles.User };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var carListing = new CarListing
         {
-            SetupUser(1, "User");
-            var listing = new CarListing { Id = 1, UserId = 1, Brand = "Toyota" };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+            Brand = "Toyota",
+            EngineCapacity = 2000,
+            Seats = 5,
+            FuelType = "Gasoline",
+            CarType = "Sedan",
+            RentalPricePerDay = 50.00m,
+            Features = new List<string> { "AC", "GPS" },
+            Latitude = 51.107883,
+            Longitude = 17.038538
+        };
 
-            var result = await _controller.DeleteCarListing(1);
+        var result = await _controller.AddCarListing(carListing);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("Ogłoszenie usunięte.", okResult.Value);
-            Assert.Empty(_context.CarListing);
-        }
-        [Fact]
-        public async Task DeleteCarListing_AsNonOwner_ReturnsForbid()
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(okResult.Value));
+
+        Assert.Equal("Ogłoszenie zostało dodane i oczekuje na zatwierdzenie.", jsonElement.GetProperty("message").GetString());
+        Assert.True(jsonElement.GetProperty("id").GetInt32() > 0);
+
+        var addedListing = await _context.CarListing.FirstOrDefaultAsync(l => l.Id == jsonElement.GetProperty("id").GetInt32());
+        Assert.NotNull(addedListing);
+        Assert.Equal(carListing.Brand, addedListing.Brand);
+        Assert.Equal(1, addedListing.UserId);
+        Assert.True(addedListing.IsAvailable);
+        Assert.False(addedListing.IsApproved);
+        Assert.Equal(carListing.RentalPricePerDay, addedListing.RentalPricePerDay);
+    }
+
+    [Theory]
+    [InlineData(null, 1.5, 5, "Gasoline", "SUV", 100.00, ErrorMessages.BadRequestRequiredBrand)]
+    [InlineData("Brand", 0, 5, "Gasoline", "SUV", 100.00, ErrorMessages.BadRequestEngineCapacity)]
+    [InlineData("Brand", 1.5, 0, "Gasoline", "SUV", 100.00, ErrorMessages.BadRequestSeats)]
+    [InlineData("Brand", 1.5, 5, null, "SUV", 100.00, ErrorMessages.BadRequestFuelType)]
+    [InlineData("Brand", 1.5, 5, "Gasoline", null, 100.00, ErrorMessages.BadRequestCarType)]
+    [InlineData("Brand", 1.5, 5, "Gasoline", "SUV", 0.00, ErrorMessages.BadRequestRentalPrice)]
+    [InlineData("Brand", 1.5, 5, "Gasoline", "SUV", 100.00, ErrorMessages.BadRequestInvalidFeature, "AC", null)]
+    public async Task AddCarListing_InvalidListingData_ReturnsBadRequest(
+        string brand, double engineCapacity, int seats, string fuelType, string carType,
+        decimal rentalPricePerDay, string expectedErrorMessage,
+        string feature1 = "AC", string feature2 = "GPS")
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var user = new User { Id = 1, Username = "testuser", Email = "test@example.com", Password = "hashedpassword", Role = Roles.User };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var features = new List<string>();
+        if (feature1 != null) features.Add(feature1);
+        if (feature2 != null) features.Add(feature2);
+
+        var carListing = new CarListing
         {
-            SetupUser(2, "User");
-            var listing = new CarListing { Id = 1, UserId = 1, Brand = "Toyota" };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+            Brand = brand,
+            EngineCapacity = engineCapacity,
+            Seats = seats,
+            FuelType = fuelType,
+            CarType = carType,
+            RentalPricePerDay = rentalPricePerDay,
+            Features = features
+        };
 
-            var result = await _controller.DeleteCarListing(1);
-
-            Assert.IsType<ForbidResult>(result);
-        }
-
-        [Fact]
-        public async Task UpdateCarListing_AsOwner_ReturnsOk()
+        if (expectedErrorMessage == ErrorMessages.BadRequestInvalidFeature)
         {
-            SetupUser(1, "User");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 1,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
-
-            var updatedListing = new CarListing
-            {
-                Brand = "Honda",
-                EngineCapacity = 1.8,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 40,
-                Features = new List<string> { "AC" }
-            };
-
-            var result = await _controller.UpdateCarListing(1, updatedListing);
-
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = okResult.Value;
-            var messageProperty = returnValue.GetType().GetProperty("message");
-            var listingProperty = returnValue.GetType().GetProperty("listing");
-            var message = messageProperty.GetValue(returnValue);
-            var returnedListing = listingProperty.GetValue(returnValue) as CarListing;
-
-            Assert.Equal("Ogłoszenie zostało zaktualizowane.", message);
-            Assert.Equal("Honda", returnedListing.Brand);
-            Assert.Equal(1.8, returnedListing.EngineCapacity);
+            carListing.Features.Add(null);
         }
 
+        var result = await _controller.AddCarListing(carListing);
 
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(badRequestResult.Value));
+        Assert.Equal(expectedErrorMessage, jsonElement.GetProperty("message").GetString());
 
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Warning),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Niepoprawne dane ogłoszenia: {expectedErrorMessage}")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-        [Fact]
-        public async Task UpdateCarListing_AsNonOwner_ReturnsBadRequest()
-        {
-            SetupUser(2, "User");
-            var listing = new CarListing { Id = 1, UserId = 1, Brand = "Toyota" };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+    [Fact]
+    public async Task AddCarListing_NullListing_ReturnsBadRequest()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var user = new User { Id = 1, Username = "testuser", Email = "test@example.com", Password = "hashedpassword", Role = Roles.User };
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
 
-            var updatedListing = new CarListing { Brand = "Honda" };
+        var result = await _controller.AddCarListing(null);
 
-            var result = await _controller.UpdateCarListing(1, updatedListing);
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(badRequestResult.Value));
+        Assert.Equal(ErrorMessages.BadRequestEmptyListing, jsonElement.GetProperty("message").GetString());
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("To nie jest Twoje ogłoszenie. Tylko właściciel może je edytować.", badRequestResult.Value);
-        }
-        [Fact]
-        public async Task AddCarListing_EmptyFeatures_ReturnsBadRequest()
-        {
-            SetupUser(1, "User");
-            var carListing = new CarListing
-            {
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m,
-                Features = new List<string> { "" } 
-            };
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Warning),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains($"Niepoprawne dane ogłoszenia: {ErrorMessages.BadRequestEmptyListing}")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-            var result = await _controller.AddCarListing(carListing);
+    [Fact]
+    public async Task ApproveListing_AdminApprovesValidListing_ReturnsOkResultAndApproves()
+    {
+        ClearDatabase();
+        SetControllerUser(2, Roles.Admin);
+        var owner = new User { Id = 1, Username = "owner", Email = "owner@e.com", Password = "p", Role = Roles.User };
+        var admin = new User { Id = 2, Username = "admin", Email = "admin@e.com", Password = "p", Role = Roles.Admin };
+        var listing = new CarListing { Id = 1, UserId = 1, Brand = "Ford", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = false, IsAvailable = true };
+        _context.Users.AddRange(owner, admin);
+        _context.CarListing.Add(listing);
+        await _context.SaveChangesAsync();
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Każda cecha musi być wypełniona poprawnie.", badRequestResult.Value);
-        }
+        var result = await _controller.ApproveListing(1);
 
-        [Fact]
-        public async Task AddCarListing_NegativePrice_ReturnsBadRequest()
-        {
-            SetupUser(1, "User");
-            var carListing = new CarListing
-            {
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = -50m 
-            };
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(okResult.Value));
 
-            var result = await _controller.AddCarListing(carListing);
+        Assert.Equal("Ogłoszenie zostało zatwierdzone.", jsonElement.GetProperty("message").GetString());
+        var returnedListing = Assert.IsType<CarListing>(okResult.Value.GetType().GetProperty("listing").GetValue(okResult.Value));
+        Assert.True(returnedListing.IsApproved);
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Cena wynajmu na jeden dzień musi być większa niż 0.", badRequestResult.Value);
-        }
+        var updatedListing = await _context.CarListing.FindAsync(1);
+        Assert.True(updatedListing.IsApproved);
+    }
 
-        [Fact]
-        public async Task AddCarListing_NullBrand_ReturnsBadRequest()
-        {
-            SetupUser(1, "User");
-            var carListing = new CarListing
-            {
-                Brand = null,
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m
-            };
+    [Fact]
+    public async Task ApproveListing_AdminApprovesNonExistentListing_ReturnsNotFound()
+    {
+        ClearDatabase();
+        SetControllerUser(2, Roles.Admin);
 
-            var result = await _controller.AddCarListing(carListing);
+        var result = await _controller.ApproveListing(999);
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Marka samochodu jest wymagana.", badRequestResult.Value);
-        }
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(notFoundResult.Value));
+        Assert.Equal(ErrorMessages.ListingNotFound, jsonElement.GetProperty("message").GetString());
 
-        [Fact]
-        public async Task ApproveListing_NonExistentListing_ReturnsNotFound()
-        {
-            SetupUser(1, "Admin");
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Warning),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Admin próbował zatwierdzić nieistniejące ogłoszenie ID: 999")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-            var result = await _controller.ApproveListing(999);
+    [Fact]
+    public async Task ApproveListing_ListingAlreadyApproved_ReturnsBadRequest()
+    {
+        ClearDatabase();
+        SetControllerUser(2, Roles.Admin);
+        var listing = new CarListing { Id = 1, UserId = 1, Brand = "Ford", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = true, IsAvailable = true };
+        _context.CarListing.Add(listing);
+        await _context.SaveChangesAsync();
 
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Ogłoszenie nie istnieje.", notFoundResult.Value);
-        }
+        var result = await _controller.ApproveListing(1);
 
-        [Fact]
-        public async Task UpdateCarAvailability_AsAdmin_ReturnsOk()
-        {
-            SetupUser(2, "Admin");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 1,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m,
-                IsAvailable = true
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(badRequestResult.Value));
+        Assert.Equal("Ogłoszenie jest już zatwierdzone.", jsonElement.GetProperty("message").GetString());
 
-            var result = await _controller.UpdateCarAvailability(1, false);
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Warning),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Admin próbował zatwierdzić już zatwierdzone ogłoszenie ID: 1")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = okResult.Value;
-            var messageProperty = returnValue.GetType().GetProperty("message");
-            var listingProperty = returnValue.GetType().GetProperty("listing");
-            var message = messageProperty.GetValue(returnValue);
-            var returnedListing = listingProperty.GetValue(returnValue) as CarListing;
+    [Fact]
+    public async Task UpdateCarAvailability_OwnerUpdatesAvailability_ReturnsOkResultAndUpdates()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var listing = new CarListing { Id = 1, UserId = 1, Brand = "Ford", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsAvailable = true, IsApproved = true };
+        _context.CarListing.Add(listing);
+        await _context.SaveChangesAsync();
 
-            Assert.Equal("Status dostępności został zmieniony.", message);
-            Assert.False(returnedListing.IsAvailable);
-        }
+        var result = await _controller.UpdateCarAvailability(1, false);
 
-        [Fact]
-        public async Task GetAllCarListings_NoListingsInRegion_ReturnsNotFound()
-        {
-            SetupUser(1, "User");
-            var listings = new List<CarListing>
-            {
-                new CarListing { Id = 1, UserId = 2, Brand = "Toyota", EngineCapacity = 2.0, FuelType = "Petrol", CarType = "Sedan", Seats = 5, RentalPricePerDay = 50m, IsApproved = true, Latitude = 50.0, Longitude = 20.0 }
-            };
-            _context.CarListing.AddRange(listings);
-            await _context.SaveChangesAsync();
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(okResult.Value));
+        Assert.Equal("Status dostępności został zmieniony.", jsonElement.GetProperty("message").GetString());
+        var returnedListing = Assert.IsType<CarListing>(okResult.Value.GetType().GetProperty("listing").GetValue(okResult.Value));
+        Assert.False(returnedListing.IsAvailable);
 
-            var result = await _controller.GetAllCarListings(60.0, 30.0, 10);
+        var updatedListing = await _context.CarListing.FindAsync(1);
+        Assert.False(updatedListing.IsAvailable);
 
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Brak dostępnych samochodów w podanym regionie.", notFoundResult.Value);
-        }
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Information),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Dostępność ogłoszenia ID: 1 zmieniono na False przez użytkownika ID: 1.")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-        [Fact]
-        public async Task DeleteCarListing_AsAdmin_ReturnsOk()
-        {
-            SetupUser(2, "Admin");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 1,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+    [Fact]
+    public async Task UpdateCarAvailability_AdminUpdatesAvailability_ReturnsOkResultAndUpdates()
+    {
+        ClearDatabase();
+        SetControllerUser(2, Roles.Admin);
+        var listing = new CarListing { Id = 1, UserId = 1, Brand = "Ford", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsAvailable = true, IsApproved = true };
+        _context.CarListing.Add(listing);
+        await _context.SaveChangesAsync();
 
-            var result = await _controller.DeleteCarListing(1);
+        var result = await _controller.UpdateCarAvailability(1, false);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("Ogłoszenie usunięte.", okResult.Value);
-            Assert.Empty(_context.CarListing);
-        }
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(okResult.Value));
+        Assert.Equal("Status dostępności został zmieniony.", jsonElement.GetProperty("message").GetString());
+        var returnedListing = Assert.IsType<CarListing>(okResult.Value.GetType().GetProperty("listing").GetValue(okResult.Value));
+        Assert.False(returnedListing.IsAvailable);
 
-        [Fact]
-        public async Task UpdateCarListing_NegativeSeats_ReturnsBadRequest()
-        {
-            SetupUser(1, "User");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 1,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+        var updatedListing = await _context.CarListing.FindAsync(1);
+        Assert.False(updatedListing.IsAvailable);
 
-            var updatedListing = new CarListing
-            {
-                Brand = "Honda",
-                EngineCapacity = 1.8,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = -1,
-                RentalPricePerDay = 40m
-            };
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Information),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Dostępność ogłoszenia ID: 1 zmieniono na False przez użytkownika ID: 2.")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-            var result = await _controller.UpdateCarListing(1, updatedListing);
+    [Fact]
+    public async Task UpdateCarAvailability_NonOwnerNonAdmin_ReturnsUnauthorized()
+    {
+        ClearDatabase();
+        SetControllerUser(3, Roles.User);
+        var listing = new CarListing { Id = 1, UserId = 1, Brand = "Ford", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsAvailable = true, IsApproved = true };
+        _context.CarListing.Add(listing);
+        await _context.SaveChangesAsync();
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Liczba miejsc musi być większa od 0.", badRequestResult.Value);
-        }
+        var result = await _controller.UpdateCarAvailability(1, false);
 
-        [Fact]
-        public async Task UpdateCarListing_EmptyFuelType_ReturnsBadRequest()
-        {
-            SetupUser(1, "User");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 1,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+        var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(unauthorizedResult.Value));
+        Assert.Equal(ErrorMessages.NotOwnerOrAdmin, jsonElement.GetProperty("message").GetString());
 
-            var updatedListing = new CarListing
-            {
-                Brand = "Honda",
-                EngineCapacity = 1.8,
-                FuelType = "", 
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 40m
-            };
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Warning),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Użytkownik ID: 3 próbował zmienić dostępność ogłoszenia ID: 1, do którego nie ma uprawnień.")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-            var result = await _controller.UpdateCarListing(1, updatedListing);
+    [Fact]
+    public async Task UpdateCarAvailability_ListingNotFound_ReturnsNotFound()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Typ paliwa jest wymagany.", badRequestResult.Value);
-        }
+        var result = await _controller.UpdateCarAvailability(999, false);
 
-        [Fact]
-        public async Task GetAllCarListings_VerifiesDistanceCalculation()
-        {
-            SetupUser(1, "User");
-            var listings = new List<CarListing>
-            {
-                new CarListing { Id = 1, UserId = 2, Brand = "Toyota", EngineCapacity = 2.0, FuelType = "Petrol", CarType = "Sedan", Seats = 5, RentalPricePerDay = 50m, IsApproved = true, Latitude = 50.0, Longitude = 20.0 },
-                new CarListing { Id = 2, UserId = 2, Brand = "Honda", EngineCapacity = 1.8, FuelType = "Petrol", CarType = "Sedan", Seats = 5, RentalPricePerDay = 40m, IsApproved = true, Latitude = 50.01, Longitude = 20.01 } // Bardzo blisko
-            };
-            _context.CarListing.AddRange(listings);
-            await _context.SaveChangesAsync();
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(notFoundResult.Value));
+        Assert.Equal(ErrorMessages.ListingNotFound, jsonElement.GetProperty("message").GetString());
 
-            var result = await _controller.GetAllCarListings(50.0, 20.0, 2);
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Warning),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Użytkownik ID: 1 próbował zmienić dostępność nieistniejącego ogłoszenia ID: 999")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedListings = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Equal(2, returnedListings.Count);
-            Assert.Contains(returnedListings, l => l.Brand == "Toyota");
-            Assert.Contains(returnedListings, l => l.Brand == "Honda");
-        }
+    [Fact]
+    public async Task GetUserCarListings_UserHasApprovedListings_ReturnsOkResultWithListings()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var user = new User { Id = 1, Username = "owner", Email = "owner@e.com", Password = "p", Role = Roles.User };
+        var listing1 = new CarListing { Id = 1, UserId = 1, Brand = "Ford", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = true, IsAvailable = true };
+        var listing2 = new CarListing { Id = 2, UserId = 1, Brand = "BMW", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = true, IsAvailable = true };
+        var listing3 = new CarListing { Id = 3, UserId = 2, Brand = "Audi", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = true, IsAvailable = true };
+        var listing4 = new CarListing { Id = 4, UserId = 1, Brand = "Merc", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = false, IsAvailable = true };
 
-        [Fact]
-        public async Task DeleteCarListing_NonExistent_ReturnsNotFound()
-        {
-            SetupUser(1, "User");
+        _context.Users.Add(user);
+        _context.CarListing.AddRange(listing1, listing2, listing3, listing4);
+        await _context.SaveChangesAsync();
 
-            var result = await _controller.DeleteCarListing(999);
+        var result = await _controller.GetUserCarListings();
 
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Ogłoszenie nie istnieje.", notFoundResult.Value);
-        }
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var listings = Assert.IsType<List<CarListing>>(okResult.Value);
 
-        [Fact]
-        public async Task UpdateCarListing_NegativePrice_ReturnsBadRequest()
-        {
-            SetupUser(1, "User");
-            var listing = new CarListing
-            {
-                Id = 1,
-                UserId = 1,
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = 50m
-            };
-            _context.CarListing.Add(listing);
-            await _context.SaveChangesAsync();
+        Assert.Equal(2, listings.Count);
+        Assert.Contains(listings, l => l.Id == 1);
+        Assert.Contains(listings, l => l.Id == 2);
+        Assert.DoesNotContain(listings, l => l.Id == 3);
+        Assert.DoesNotContain(listings, l => l.Id == 4);
 
-            var updatedListing = new CarListing
-            {
-                Brand = "Toyota",
-                EngineCapacity = 2.0,
-                FuelType = "Petrol",
-                CarType = "Sedan",
-                Seats = 5,
-                RentalPricePerDay = -10m 
-            };
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Information),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Pomyślnie pobrano 2 zatwierdzonych ogłoszeń dla użytkownika ID: 1.")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
 
-            var result = await _controller.UpdateCarListing(1, updatedListing);
+    [Fact]
+    public async Task GetUserCarListings_UserHasNoApprovedListings_ReturnsNotFound()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var user = new User { Id = 1, Username = "owner", Email = "owner@e.com", Password = "p", Role = Roles.User };
+        var listing1 = new CarListing { Id = 1, UserId = 1, Brand = "Ford", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = false, IsAvailable = true };
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Cena wynajmu na jeden dzień musi być większa niż 0.", badRequestResult.Value);
-        }
+        _context.Users.Add(user);
+        _context.CarListing.Add(listing1);
+        await _context.SaveChangesAsync();
 
-        [Fact]
-        public async Task GetAllCarListings_OnlyApprovedListings_ReturnsApprovedOnly()
-        {
-            SetupUser(1, "User");
-            var listings = new List<CarListing>
-            {
-                new CarListing
-                {
-                    Id = 1,
-                    UserId = 2,
-                    Brand = "Toyota",
-                    EngineCapacity = 2.0,
-                    FuelType = "Petrol",
-                    CarType = "Sedan",
-                    Seats = 5,
-                    RentalPricePerDay = 50m,
-                    IsApproved = true,
-                    IsAvailable = true,
-                    Latitude = 50.0,
-                    Longitude = 20.0
-                },
-                new CarListing
-                {
-                    Id = 2,
-                    UserId = 2,
-                    Brand = "Honda",
-                    EngineCapacity = 1.8,
-                    FuelType = "Petrol",
-                    CarType = "Hatchback",
-                    Seats = 5,
-                    RentalPricePerDay = 40m,
-                    IsApproved = false,
-                    IsAvailable = true,
-                    Latitude = 50.0,
-                    Longitude = 20.0
-                }
-            };
-            _context.CarListing.AddRange(listings);
-            await _context.SaveChangesAsync();
+        var result = await _controller.GetUserCarListings();
 
-            var result = await _controller.GetAllCarListings(50.0, 20.0, 100);
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(notFoundResult.Value));
+        Assert.Equal(ErrorMessages.NoApprovedListingsForUser, jsonElement.GetProperty("message").GetString());
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedListings = Assert.IsAssignableFrom<List<CarListing>>(okResult.Value);
-            Assert.Single(returnedListings);
-            Assert.Equal("Toyota", returnedListings[0].Brand);
-            Assert.True(returnedListings[0].IsApproved);
-        }
+        _mockLogger.Verify(
+            x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Information),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Brak zatwierdzonych ogłoszeń dla użytkownika ID: 1.")),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetUserCarListings_NoListingsAtAll_ReturnsNotFound()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+
+        var result = await _controller.GetUserCarListings();
+
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        var jsonElement = JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(notFoundResult.Value));
+        Assert.Equal(ErrorMessages.NoApprovedListingsForUser, jsonElement.GetProperty("message").GetString());
+    }
+
+    [Fact]
+    public async Task GetAllCarListings_WithLocationFilter_ReturnsListingsWithinRadius()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var user1 = new User { Id = 1, Username = "user1", Email = "user1@e.com", Password = "p", Role = Roles.User };
+        var user2 = new User { Id = 2, Username = "user2", Email = "user2@e.com", Password = "p", Role = Roles.User };
+        var user3 = new User { Id = 3, Username = "user3", Email = "user3@e.com", Password = "p", Role = Roles.User };
+
+        var listing1 = new CarListing { Id = 1, UserId = 2, Brand = "BMW", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = true, IsAvailable = true, Latitude = 52.2297, Longitude = 21.0122 };
+        var listing2 = new CarListing { Id = 2, UserId = 3, Brand = "Audi", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = true, IsAvailable = true, Latitude = 50.0647, Longitude = 19.9450 };
+
+        _context.Users.AddRange(user1, user2, user3);
+        _context.CarListing.AddRange(listing1, listing2);
+        await _context.SaveChangesAsync();
+
+        double warsawLat = 52.2297;
+        double warsawLng = 21.0122;
+        double radiusKm = 10;
+
+        var result = await _controller.GetAllCarListings(warsawLat, warsawLng, radiusKm);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var listings = Assert.IsType<List<CarListing>>(okResult.Value);
+
+        Assert.Single(listings);
+        Assert.Contains(listings, l => l.Id == 1);
+        Assert.DoesNotContain(listings, l => l.Id == 2);
+    }
+
+    [Fact]
+    public async Task GetAllCarListings_WithLocationFilter_NoListingsInRadius_ReturnsEmptyList()
+    {
+        ClearDatabase();
+        SetControllerUser(1, Roles.User);
+        var user1 = new User { Id = 1, Username = "user1", Email = "user1@e.com", Password = "p", Role = Roles.User };
+        var user2 = new User { Id = 2, Username = "user2", Email = "user2@e.com", Password = "p", Role = Roles.User };
+
+        var listing1 = new CarListing { Id = 1, UserId = 2, Brand = "BMW", EngineCapacity = 1000, FuelType = "Gas", Seats = 4, CarType = "Sedan", RentalPricePerDay = 50.00m, IsApproved = true, IsAvailable = true, Latitude = 50.0647, Longitude = 19.9450 };
+
+        _context.Users.AddRange(user1, user2);
+        _context.CarListing.Add(listing1);
+        await _context.SaveChangesAsync();
+
+        double warsawLat = 52.2297;
+        double warsawLng = 21.0122;
+        double radiusKm = 10;
+
+        var result = await _controller.GetAllCarListings(warsawLat, warsawLng, radiusKm);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var listings = Assert.IsType<List<CarListing>>(okResult.Value);
+
+        Assert.Empty(listings);
     }
 }
