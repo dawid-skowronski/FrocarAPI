@@ -22,3 +22,22 @@
 | RENT-17   | Właściciel może edytować i usuwać swoje ogłoszenia.     | *   | ✓   | ✓      |         |
 | RENT-18   | Użytkownik może oceniać i recenzować wynajęte pojazdy.  | *   | ✓   | ✓      |         |
 | RENT-19   | Użytkownik może się wylogować.                          |     | ✓   | ✓      |         |
+
+Lokalne uruchomienie aplikacji API
+1. Wymagania wstępne:
+• Zainstaluj Visual Studio 2022 (zalecana wersja Community, Professional)
+2. Pobieranie kodu:
+• Sklonuj repozytorium projektu: https://github.com/dawid-skowronski/FrocarAPI lub pobierz plik FrogCar.
+3. Wczytanie projektu:
+• Otwórz plik rozwiązania (FrogCar.sln) w Visual Studio 2022.
+4. Konfiguracja:
+• Upewnij się, że wszystkie zależności NuGet (np.Microsoft.EntityFrameworkCore.SqlServer), są poprawnie zainstalowane.
+Wykonaj jedną z poniższych metod:
+– W konsoli systemowej: Przejdź do katalogu projektu i wykonaj komendę dotnet restore w terminalu, aby pobrać wszystkie pakiety NuGet.
+– W konsoli menedżera pakietów: W Visual Studio otwórz konsolę menedżera pakietów (Package Manager Console) i wykonaj komendę Restore-Package.
+5. Migracje bazy danych:
+• W terminalu w Visual Studio (Package Manager Console) wykonaj komendę Update-Database, aby zastosować migracje Entity Framework Core i utworzyć schemat bazy danych.
+6. Kompilacja i uruchomienie:
+• Skompiluj projekt, wybierając konfigurację Debug w Visual Studio.
+• Uruchom aplikację, naciskając F5 lub klikając przycisk Start w Visual Studio.
+API będzie dostępne pod domyślnym adresem (np. https://localhost:5001 lub http://localhost:5000).
