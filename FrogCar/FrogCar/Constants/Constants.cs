@@ -11,7 +11,6 @@
         public const string Unauthorized = "Nie można zidentyfikować użytkownika.";
         public const string AdminOnly = "Brak uprawnień. Tylko administrator może wykonać tę operację.";
         public const string NotOwnerOrAdmin = "Brak uprawnień. Tylko właściciel ogłoszenia lub administrator może wykonać tę operację.";
-
         public const string InvalidModel = "Błąd walidacji.";
         public const string UsernameTaken = "Nazwa użytkownika jest już zajęta.";
         public const string EmailTaken = "Podany adres e-mail jest już używany.";
@@ -19,11 +18,9 @@
         public const string InvalidLoginData = "Nazwa użytkownika lub hasło nie mogą być puste.";
         public const string EmptyUsername = "Nowa nazwa użytkownika nie może być pusta.";
         public const string UserNotFound = "Użytkownik nie istnieje.";
-
         public const string InvalidToken = "Nieprawidłowy lub wygasły token resetujący.";
         public const string EmailConfigMissing = "Brakuje klucza EmailSecretKey w konfiguracji.";
         public const string FrontendUrlMissing = "Brakuje adresu ResetPasswordUrl w konfiguracji.";
-
         public const string ListingNotFound = "Ogłoszenie nie istnieje.";
         public const string BadRequestEmptyListing = "Ogłoszenie nie może być puste.";
         public const string BadRequestRequiredBrand = "Marka samochodu jest wymagana.";
@@ -36,9 +33,7 @@
         public const string NoApprovedListingsForUser = "Brak zatwierdzonych ogłoszeń dla tego użytkownika.";
         public const string NoListingsAvailable = "Brak ogłoszeń.";
         public const string NoCarsInRegion = "Brak dostępnych samochodów w podanym regionie.";
-
         public const string NoNotifications = "Brak nowych powiadomień.";
-
         public const string BadRequestEmptyRental = "Dane wypożyczenia są wymagane.";
         public const string RentalEndDateBeforeStartDate = "Data zakończenia wypożyczenia musi być późniejsza niż data rozpoczęcia.";
         public const string CarNotAvailable = "Samochód jest już niedostępny.";
@@ -57,9 +52,10 @@
         public const string AlreadyReviewed = "Wystawiłeś już recenzję dla tego wypożyczenia.";
         public const string NoReviewsForListing = "Brak recenzji dla tego ogłoszenia.";
         public const string NotOwnerOrAdminRentalDeletion = "Nie masz uprawnień do usunięcia tego wypożyczenia.";
-
         public const string NoCarsMatchingCriteria = "Nie znaleziono samochodów pasujących do podanych kryteriów.";
         public const string RentalNotEnded = "Wypożyczenie sie nie zakończyło";
         public const string RentalNotFoundForUser = "Nie znaleziono wypożyczenia dla tego użytkownika";
+        public const string CannotDeleteRentedCar = "Nie możesz usunąć wypożyczonego samochodu";
+        public const string NotRenterOrAdminRentalDeletion = "Tylko najemca lub administrator może usunąć wypożyczenie.";
     }
 }

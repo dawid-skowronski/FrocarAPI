@@ -252,7 +252,7 @@ public class CarRentalController : ControllerBase
         await _notificationService.CreateNotificationAsync(
             rental.UserId,
             null,
-            $"Status Twojego wypożyczenia samochodu o ID: {rental.CarRentalId} został zmieniony na: {status}."
+            $"Status Twojego wypożyczenia został zmieniony na: {status}."
         );
         _logger.LogInformation("Powiadomienie o zmianie statusu wysłane do użytkownika wypożyczającego ID: {RenterId}.", rental.UserId);
 
@@ -389,10 +389,10 @@ public class CarRentalController : ControllerBase
             return StatusCode(StatusCodes.Status404NotFound, new { message = ErrorMessages.RentalNotFound });
         }
 
-        if (rental.CarListing.UserId != userId && !IsCurrentUserAdmin())
+        if (rental.UserId != userId && !IsCurrentUserAdmin())
         {
             _logger.LogWarning("Użytkownik ID: {UserId} próbował usunąć wypożyczenie ID: {CarRentalId}, do którego nie ma uprawnień.", userId, id);
-            return StatusCode(StatusCodes.Status403Forbidden, new { message = ErrorMessages.NotOwnerOrAdminRentalDeletion });
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = ErrorMessages.NotRenterOrAdminRentalDeletion });
         }
 
         if (rental.RentalStatus == "Aktywne")
@@ -423,7 +423,7 @@ public class CarRentalController : ControllerBase
             return;
         }
 
-        var notificationMessage = $"Twoje wypożyczenie samochodu o ID {rental.CarRentalId} zostało zakończone.";
+        var notificationMessage = $"Twoje wypożyczenie zostało zakończone.";
 
         await _notificationService.CreateNotificationAsync(
             user.Id,

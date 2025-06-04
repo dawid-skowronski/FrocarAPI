@@ -120,7 +120,7 @@ namespace FrogCar.Controllers
             await _notificationService.CreateNotificationAsync(
                 listing.UserId,
                 null,
-                $"Twoje ogłoszenie o ID: {listing.Id} zostało zatwierdzone przez administratora."
+                $"Twoje ogłoszenie zostało zatwierdzone przez administratora"
             );
 
             return Ok(new { message = "Ogłoszenie zostało zatwierdzone.", listing });
@@ -241,9 +241,24 @@ namespace FrogCar.Controllers
                 return Unauthorized(new { message = ErrorMessages.NotOwnerOrAdmin });
             }
 
+            var isRented = await _context.CarRentals
+                .AnyAsync(r => r.CarListingId == id && r.RentalEndDate >= DateTime.UtcNow);
+
+            if (isRented && !IsCurrentUserAdmin())
+            {
+                _logger.LogWarning("Użytkownik ID: {UserId} próbował usunąć wypożyczone ogłoszenie ID: {CarListingId}.", GetCurrentUserId(), id);
+                return BadRequest(new { message = ErrorMessages.CannotDeleteRentedCar });
+            }
+
             _context.CarListing.Remove(listing);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Ogłoszenie ID: {CarListingId} zostało usunięte przez użytkownika ID: {UserId}.", id, GetCurrentUserId());
+
+            await _notificationService.CreateNotificationAsync(
+                listing.UserId,
+                null,
+                "Twoje ogłoszenie zostało usunięte."
+            );
 
             return Ok("Ogłoszenie usunięte.");
         }
@@ -322,7 +337,7 @@ namespace FrogCar.Controllers
                 await _notificationService.CreateNotificationAsync(
                     admin.Id,
                     null,
-                    $"Użytkownik o ID {userId} dodał nowe ogłoszenie do zatwierdzenia."
+                    $"Nowe ogłoszenie oczekuję na zatwierdzenie"
                 );
             }
             _logger.LogInformation("Powiadomiono administratorów o nowym ogłoszeniu od użytkownika ID: {UserId}.", userId);

@@ -334,8 +334,8 @@ namespace FrogCar.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddMinutes(10)
             });
         }
 
