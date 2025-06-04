@@ -32,8 +32,8 @@ Lokalne uruchomienie aplikacji API
 • Otwórz plik rozwiązania (FrogCar.sln) w Visual Studio 2022.
 4. Konfiguracja:<br>
 • Upewnij się, że wszystkie zależności NuGet (np.Microsoft.EntityFrameworkCore.SqlServer), są poprawnie zainstalowane.
-Wykonaj jedną z poniższych metod:
-– W konsoli systemowej: Przejdź do katalogu projektu i wykonaj komendę dotnet restore w terminalu, aby pobrać wszystkie pakiety NuGet.
+Wykonaj jedną z poniższych metod:<br>
+– W konsoli systemowej: Przejdź do katalogu projektu i wykonaj komendę dotnet restore w terminalu, aby pobrać wszystkie pakiety NuGet.<br>
 – W konsoli menedżera pakietów: W Visual Studio otwórz konsolę menedżera pakietów (Package Manager Console) i wykonaj komendę Restore-Package.
 5. Migracje bazy danych:<br>
 • W terminalu w Visual Studio (Package Manager Console) wykonaj komendę Update-Database, aby zastosować migracje Entity Framework Core i utworzyć schemat bazy danych.
